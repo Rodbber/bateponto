@@ -11,5 +11,5 @@ class BatepontoQuadrilateros extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['empresa_id', 'nome', 'pontos'];
+    protected $fillable = ['empresa_user_id', 'nome', 'pontos'];
 }

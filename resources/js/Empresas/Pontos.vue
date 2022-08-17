@@ -4,11 +4,12 @@
         <div class="p-5 flex flex-col md:flex-row">
             <div id="map" class="min-w-max h-[40vh] md:w-[50vw] md:h-[80vh]"></div>
             <div class="pl-5 flex-1">
+
                 <div class="mb-4 w-full">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="nomePonto">
                         Nome do ponto
                     </label>
-                    <input
+                    <input v-model="nome"
                         class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         id="nomePonto" type="text" placeholder="Nome do ponto">
                 </div>
@@ -45,7 +46,7 @@
                         <div class="flex-1 md:flex-auto" v-if="desenhos">
                             <button type="button"
                                 class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out w-full md:w-auto"
-                                @click="aplicarForma">Salvar</button>
+                                @click="salvarPonto">Salvar</button>
                         </div>
                     </div>
 
@@ -62,6 +63,7 @@ import * as L from 'leaflet'
 import 'leaflet-geosearch/dist/geosearch.css';
 import 'leaflet-path-transform';
 import * as GeoSearch from 'leaflet-geosearch'
+import axios from "axios";
 
 let map
 let markers
@@ -73,6 +75,7 @@ export default {
             map: null,
             markers: null,
             desenhos: false,
+            nome: null,
 
         }
     },
@@ -92,6 +95,40 @@ export default {
                 markers.clearLayers()
             }
         },
+        deg2rad: deg => (deg * Math.PI) / 180.0,
+
+        distancia(lat1, lon1, lat2, lon2) {
+
+            const dlat = ((lat1 - lat2) * Math.PI) / 180.0
+            const dlng = ((lon1 - lon2) * Math.PI) / 180.0
+
+            lat1 = deg2rad(lat1);
+            lat2 = deg2rad(lat2);
+            lon1 = deg2rad(lon1);
+            lon2 = deg2rad(lon2);
+
+            let a = Math.pow(Math.sin(dlat / 2), 2) + Math.pow(Math.sin(dlng / 2), 2) * Math.cos(lat1) * Math.cos(lat2)
+            const dist = 6371 * (2 * Math.asin(Math.sqrt(a)))
+            //dist = number_format(dist, 2, '.', '');
+            return dist; // em km
+        },
+        areaDoQuadrilatero(b, h) {
+            return b * h
+        },
+        salvarPonto() {
+            const layer = desenhos.getLayers()[0]
+            if (layer instanceof L.Rectangle) {
+                const pontos = layer.getLatLngs()[0]
+                axios.post('/empresa/pontos/createPonto', { pontos, nome: this.nome })
+                    .then(r => {
+                        console.log(r.data)
+                    })
+                    .catch(e => console.log(e.message))
+            } else {
+
+            }
+
+        },
         getMarkers() {
             return markers
         },
@@ -102,12 +139,15 @@ export default {
             markers.clearLayers()
         },
         clearMarkers() {
+            if (desenhos.getLayers()[0] instanceof L.Rectangle) {
+                desenhos.getLayers()[0].transform.disable()
+            }
             desenhos.clearLayers()
-            this.desenhos = true;
+            this.desenhos = false;
         },
         clearAll() {
-            clearMarkers()
-            clearDesenhos()
+            this.clearMarkers()
+            this.clearDesenhos()
         }
     },
     created() {

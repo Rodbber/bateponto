@@ -29,8 +29,8 @@ foreach ($admins as $file) {
         require($file);
     }
 }
-$admins = glob(__DIR__ . '/Empresa/*.php');
-foreach ($admins as $file) {
+$empresa = glob(__DIR__ . '/Empresa/*.php');
+foreach ($empresa as $file) {
     // prevents including file itself
     if ($file != __FILE__) {
         require($file);

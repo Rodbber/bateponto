@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('bateponto_circulos', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('empresa_id');
+            $table->unsignedBigInteger('empresa_user_id');
             $table->foreign('empresa_user_id')->references('id')->on('empresa_users');
             $table->string('nome');
             $table->string('ponto');

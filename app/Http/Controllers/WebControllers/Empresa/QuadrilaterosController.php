@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\WebControllers\Empresa;
 
 use App\Http\Controllers\Controller;
+use App\Models\BatepontoQuadrilateros;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class QuadrilaterosController extends Controller
 {
@@ -14,7 +17,11 @@ class QuadrilaterosController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            return BatepontoQuadrilateros::withTrashed()->get();
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     /**
@@ -35,7 +42,20 @@ class QuadrilaterosController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $dadosValidados = Validator::make($request->all(),[
+            'pontos' => 'required|array:lat,lng',
+            'nome' => 'required|string',
+        ])->validated();
+
+        $user = Auth::guard('empresa')->user();
+        $dadosValidados['empresa_user_id'] = $user->id;
+        $dadosValidados['pontos'] = json_encode($dadosValidados['pontos']);
+        try {
+            BatepontoQuadrilateros::create($dadosValidados);
+            return response('success', 200);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     /**
@@ -46,7 +66,7 @@ class QuadrilaterosController extends Controller
      */
     public function show($id)
     {
-        //
+        return BatepontoQuadrilateros::find($id);
     }
 
     /**
@@ -57,7 +77,17 @@ class QuadrilaterosController extends Controller
      */
     public function edit($id)
     {
-        //
+        $dadosValidados = Validator::make([
+            'pontos' => 'required|array:lat,lng',
+            'nome' => 'required|string',
+        ])->validated();
+
+        try {
+            BatepontoQuadrilateros::create($dadosValidados);
+            return response('success', 200);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     /**
