@@ -24,6 +24,17 @@ class QuadrilaterosController extends Controller
         }
     }
 
+    public function indexEmpresa()
+    {
+        $user = Auth::guard('empresa')->user();
+        $id = $user->id;
+        try {
+            return BatepontoQuadrilateros::withTrashed()->where('empresa_user_id', $id)->get();
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -75,15 +86,18 @@ class QuadrilaterosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($id, Request $request)
     {
-        $dadosValidados = Validator::make([
+        $dadosValidados = Validator::make($request->all(),[
             'pontos' => 'required|array:lat,lng',
             'nome' => 'required|string',
         ])->validated();
 
+        $user = Auth::guard('empresa')->user();
+        $dadosValidados['empresa_user_id'] = $user->id;
+        $dadosValidados['pontos'] = json_encode($dadosValidados['pontos']);
         try {
-            BatepontoQuadrilateros::create($dadosValidados);
+            BatepontoQuadrilateros::find($id)->update($dadosValidados);
             return response('success', 200);
         } catch (\Throwable $th) {
             throw $th;

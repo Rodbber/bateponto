@@ -7,6 +7,7 @@ export default defineConfig({
     esbuild: {
         jsxInject: `import * as L from 'leaflet'`,
         jsxInject: `import * as GeoSearch from 'leaflet-geosearch'`,
+        jsxInject: `import Oruga from '@oruga-ui/oruga-next'`,
     },
     plugins: [
         vue(),
