@@ -13,13 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('bateponto_quadrilateros', function (Blueprint $table) {
+        Schema::create('bateponto_poligonos', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('empresa_user_id');
             $table->foreign('empresa_user_id')->references('id')->on('empresa_users');
             $table->string('nome');
-            $table->string('pontos',1000);
-            $table->string('tipo')->default('QUADRILATERO');
+            $table->string('pontos',2000);
+            //$table->string('tipo')->default('POLIGONO');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('bateponto_quadrilateros');
+        Schema::dropIfExists('bateponto_poligonos');
     }
 };

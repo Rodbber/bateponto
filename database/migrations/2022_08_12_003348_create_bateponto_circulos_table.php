@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('nome');
             $table->string('ponto');
             $table->float('raio');
+            //$table->string('tipo')->default('CIRCULO');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

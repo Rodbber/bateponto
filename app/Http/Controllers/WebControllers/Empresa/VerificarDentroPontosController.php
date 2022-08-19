@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\WebControllers\Empresa;
 
 use App\Http\Controllers\Controller;
+use App\Models\BatepontoPoligono;
 use App\Models\BatepontoQuadrilateros;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class VerificarDentroPontosController extends Controller
@@ -28,7 +30,7 @@ class VerificarDentroPontosController extends Controller
         return $dist; // em km
     }
 
-    public function dentroDaAreaQuadrilatero($latlngs, $lat, $lng)
+    public function dentroDaAreaPoligono($latlngs, $lat, $lng)
     {
         $inside = false;
         for ($i = 0, $j = count($latlngs) - 1; $i < count($latlngs); $j = $i++) {
@@ -52,13 +54,27 @@ class VerificarDentroPontosController extends Controller
             'lat' => 'required|numeric',
             'lng' => 'required|numeric',
         ])->validated();
-        $quadrilatero = BatepontoQuadrilateros::where('empresa_user_id', $id)->get();
+        $user = Auth::guard('empresa')->user();
+        $idEmp = $user->id;
+        $quadrilatero = BatepontoQuadrilateros::where('empresa_user_id', $idEmp)->get();
+
         foreach ($quadrilatero as $key => $value) {
             $latlngs = json_decode($value['pontos'], true);
-            $ver = $this->dentroDaAreaQuadrilatero($latlngs, $dadosValidados['lat'], $dadosValidados['lng']);
+            $ver = $this->dentroDaAreaPoligono($latlngs, $dadosValidados['lat'], $dadosValidados['lng']);
             if ($ver) {
-                return $ver;
+                return $value;
             }
         }
+
+        $poligonos = BatepontoPoligono::where('empresa_user_id', $idEmp)->get();
+        foreach ($poligonos as $key => $value) {
+            $latlngs = json_decode($value['pontos'], true);
+            $ver = $this->dentroDaAreaPoligono($latlngs, $dadosValidados['lat'], $dadosValidados['lng']);
+            if ($ver) {
+                return $value;
+            }
+        }
+
+        return false;
     }
 }

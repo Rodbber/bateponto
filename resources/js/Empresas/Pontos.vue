@@ -5,54 +5,6 @@
             <div id="map" class="min-w-max h-[40vh] md:w-[50vw] md:h-[80vh]"></div>
             <div class="pl-5 flex-1">
                 <o-tabs v-model="activeTab" :multiline="multiline">
-                    <o-tab-item value="0" label="Cadastrar">
-                        <div class="mb-4 w-full">
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="nomePonto">
-                                Nome do ponto
-                            </label>
-                            <input v-model="nome"
-                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                id="nomePonto" type="text" placeholder="Nome do ponto">
-                        </div>
-                        <div>
-                            <span>Tipo</span>
-                            <div class="form-check">
-                                <input
-                                    class="form-check-input appearance-none rounded-full h-4 w-4 border border-gray-300 bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
-                                    type="radio" name="TIPO" id="quadrilatero" checked>
-                                <label class="form-check-label inline-block text-gray-800" for="quadrilatero">
-                                    Quadrilatero
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input
-                                    class="form-check-input appearance-none rounded-full h-4 w-4 border border-gray-300 bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
-                                    type="radio" name="TIPO" id="circulo">
-                                <label class="form-check-label inline-block text-gray-800" for="circulo">
-                                    Circulo
-                                </label>
-                            </div>
-
-                            <div class="flex-1" v-if="!desenhos">
-                                <button type="button"
-                                    class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out w-full md:w-auto"
-                                    @click="aplicarForma">Aplicar</button>
-                            </div>
-                            <div class="flex flex-col w-full md:w-auto space-y-2">
-                                <div class="flex-1 md:flex-auto" v-if="desenhos">
-                                    <button type="button"
-                                        class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out w-full md:w-auto"
-                                        @click="clearAll">Limpar</button>
-                                </div>
-                                <div class="flex-1 md:flex-auto" v-if="desenhos">
-                                    <button type="button"
-                                        class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out w-full md:w-auto"
-                                        @click="salvarPonto">Salvar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </o-tab-item>
-
                     <o-tab-item :value="1" label="Pontos cadastrados">
                         <div class="mt-5">
                             <o-table :data="isEmpty ? [] : data" :bordered="isBordered" :striped="isStriped"
@@ -108,6 +60,64 @@
                                     </span>
                                 </o-table-column> -->
                             </o-table>
+                        </div>
+                    </o-tab-item>
+                    <o-tab-item value="0" label="Cadastrar">
+                        <div class="mb-4 w-full">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="nomePonto">
+                                Nome do ponto
+                            </label>
+                            <input v-model="nome"
+                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                id="nomePonto" type="text" placeholder="Nome do ponto">
+                        </div>
+                        <div v-if="!id">
+                            <span>Tipo</span>
+                            <div class="form-check">
+                                <input
+                                    class="form-check-input appearance-none rounded-full h-4 w-4 border border-gray-300 bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
+                                    type="radio" name="TIPO" id="poligono" value="0" checked @change="changeRadioValue">
+                                <label class="form-check-label inline-block text-gray-800" for="poligono">
+                                    Poligono
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input
+                                    class="form-check-input appearance-none rounded-full h-4 w-4 border border-gray-300 bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
+                                    type="radio" name="TIPO" id="quadrilatero" value="1" @change="changeRadioValue">
+                                <label class="form-check-label inline-block text-gray-800" for="quadrilatero">
+                                    Quadrilatero
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input
+                                    class="form-check-input appearance-none rounded-full h-4 w-4 border border-gray-300 bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
+                                    type="radio" name="TIPO" id="circulo" value="2" @change="changeRadioValue">
+                                <label class="form-check-label inline-block text-gray-800" for="circulo">
+                                    Circulo
+                                </label>
+                            </div>
+
+
+                        </div>
+                        <div>
+                            <div class="flex-1" v-if="!desenhos">
+                                <button type="button"
+                                    class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out w-full md:w-auto"
+                                    @click="aplicarForma">Aplicar</button>
+                            </div>
+                            <div class="flex flex-col w-full md:w-auto space-y-2">
+                                <div class="flex-1 md:flex-auto" v-if="desenhos">
+                                    <button type="button"
+                                        class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out w-full md:w-auto"
+                                        @click="clearAll">Limpar</button>
+                                </div>
+                                <div class="flex-1 md:flex-auto" v-if="desenhos">
+                                    <button type="button"
+                                        class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out w-full md:w-auto"
+                                        @click="salvarPonto">Salvar</button>
+                                </div>
+                            </div>
                         </div>
                     </o-tab-item>
                 </o-tabs>
@@ -179,10 +189,11 @@ export default {
             markers: null,
             desenhos: false,
             nome: null,
+            tipoForma: null,
             testaponto: false,
 
             //tabs
-            activeTab: '0',
+            activeTab: 1,
             multiline: false,
 
             // tabela
@@ -202,6 +213,10 @@ export default {
         }
     },
     methods: {
+        changeRadioValue(n) {
+            console.log(n.target.value)
+            this.tipoForma = n.target.value
+        },
         testarPonto(row) {
             this.id = row.id
             this.testaponto = true;
@@ -211,8 +226,8 @@ export default {
                 let r = L.rectangle(pontos, { transform: true, draggable: true }).addTo(desenhos)
                 r.dragging.enable();
                 this.desenhos = true;
-                //r.transform.enable();
                 r.transform.enable({ rotation: true, uniformScaling: false });
+                r.setLatLngs(pontos);
             }
 
         },
@@ -226,7 +241,7 @@ export default {
             })
         },
         aplicarForma() {
-            if (markers.getLayers().length === 4) {
+            if (markers.getLayers().length >= 2 && this.tipoForma === '1') {
                 const markersSelecionados = []
                 for (let i of markers.getLayers()) {
                     markersSelecionados.push(i.getLatLng())
@@ -238,62 +253,77 @@ export default {
                 r.transform.enable({ rotation: true, uniformScaling: false });
 
                 markers.clearLayers()
+            } else if (markers.getLayers().length >= 2 && this.tipoForma === '0') {
+                const markersSelecionados = []
+                for (let i of markers.getLayers()) {
+                    markersSelecionados.push(i.getLatLng())
+                }
+                this.desenhos = true;
+                var polygon = L.polygon(markersSelecionados, { transform: true, draggable: true }).addTo(desenhos);
+                polygon.dragging.enable();
+                polygon.transform.enable({ rotation: true, uniformScaling: false });
+                markers.clearLayers()
             }
         },
         editaPonto(row) {
             this.id = row.id
             this.activeTab = '0'
             this.nome = row.nome
-            if (row.pontos) {
-                const pontos = JSON.parse(row.pontos)
+            const pontos = row.pontos ? JSON.parse(row.pontos) : null
+            if (row.tipo === 'QUADRILATERO' && pontos) {
+                //console.log(pontos)
                 map.setView(pontos[0], 7);
                 let r = L.rectangle(pontos, { transform: true, draggable: true }).addTo(desenhos)
                 r.dragging.enable();
                 this.desenhos = true;
                 //r.transform.enable();
                 r.transform.enable({ rotation: true, uniformScaling: false });
+            } else if (row.tipo === 'POLIGONO' && pontos) {
+                map.setView(pontos[0], 7);
+                this.desenhos = true;
+                var polygon = L.polygon(pontos, { transform: true, draggable: true }).addTo(desenhos);
+                polygon.dragging.enable();
+                polygon.transform.enable({ rotation: true, uniformScaling: false });
+                //markers.clearLayers()
             }
-        },
-        deg2rad: deg => (deg * Math.PI) / 180.0,
-
-        distancia(lat1, lon1, lat2, lon2) {
-
-            const dlat = ((lat1 - lat2) * Math.PI) / 180.0
-            const dlng = ((lon1 - lon2) * Math.PI) / 180.0
-
-            lat1 = deg2rad(lat1);
-            lat2 = deg2rad(lat2);
-            lon1 = deg2rad(lon1);
-            lon2 = deg2rad(lon2);
-
-            let a = Math.pow(Math.sin(dlat / 2), 2) + Math.pow(Math.sin(dlng / 2), 2) * Math.cos(lat1) * Math.cos(lat2)
-            const dist = 6371 * (2 * Math.asin(Math.sqrt(a)))
-            //dist = number_format(dist, 2, '.', '');
-            return dist; // em km
-        },
-        areaDoQuadrilatero(b, h) {
-            return b * h
         },
         salvarPonto() {
             const layer = desenhos.getLayers()[0]
             if (layer instanceof L.Rectangle) {
                 const pontos = layer.getLatLngs()[0]
+                /* console.log(pontos)
+                console.log(layer) */
                 if (!this.id) {
-                    axios.post('/empresa/pontos/createPonto', { pontos, nome: this.nome })
+                    axios.post('/empresa/pontos/quadrilatero/createPonto', { pontos, nome: this.nome })
                         .then(r => {
-                            console.log(r.data)
+                            //console.log(r.data)
                         })
                         .catch(e => console.log(e.message))
                 } else {
                     axios.post('/empresa/pontos/quadrilatero/update/' + this.id, { pontos, nome: this.nome })
                         .then(r => {
-                            console.log(r.data)
+                            //console.log(r.data)
                         })
                         .catch(e => console.log(e.message))
                 }
 
-            } else {
-
+            } else if (layer instanceof L.Polygon) {
+                const pontos = layer.getLatLngs()[0]
+                /* console.log(pontos)
+                console.log(layer) */
+                if (!this.id) {
+                    axios.post('/empresa/pontos/poligono/createPonto', { pontos, nome: this.nome })
+                        .then(r => {
+                            //console.log(r.data)
+                        })
+                        .catch(e => console.log(e.message))
+                } else {
+                    axios.post('/empresa/pontos/poligono/update/' + this.id, { pontos, nome: this.nome })
+                        .then(r => {
+                            //console.log(r.data)
+                        })
+                        .catch(e => console.log(e.message))
+                }
             }
 
         },
@@ -313,7 +343,7 @@ export default {
             markers.clearLayers()
         },
         clearMarkers() {
-            if (desenhos.getLayers()[0] instanceof L.Rectangle) {
+            if (desenhos.getLayers()[0] instanceof L.Rectangle || desenhos.getLayers()[0] instanceof L.Polygon) {
                 desenhos.getLayers()[0].transform.disable()
             }
             desenhos.clearLayers()
@@ -324,10 +354,27 @@ export default {
             this.clearDesenhos()
         },
         getPontos() {
+            this.data = []
+            axios.get('/empresa/pontos/poligono/get')
+                .then(r => {
+                    if (r.data) {
+                        if (this.data.length) {
+                            this.data = [...this.data, ...r.data]
+                        } else {
+                            this.data = r.data
+                        }
+                    }
+                })
+                .catch(e => console.log(e.message))
             axios.get('/empresa/pontos/quadrilatero/get')
                 .then(r => {
                     if (r.data) {
-                        this.data = r.data
+                        if (this.data.length) {
+                            this.data = [...this.data, ...r.data]
+                        } else {
+                            this.data = r.data
+                        }
+
                     }
                 })
                 .catch(e => console.log(e.message))
@@ -342,11 +389,14 @@ export default {
                 this.getPontos()
                 this.id = null
                 this.nome = null
+            } else {
+                this.tipoForma = '0'
             }
         }
     },
     mounted() {
-
+        this.tipoForma = '0'
+        this.getPontos()
         map = L.map('map', {
             scrollWheelZoom: true
         });
@@ -378,12 +428,14 @@ export default {
             clearDesenhos()
         } */
 
+        const limitePontos = this.tipoForma
+
         const limite = () => {
-            if (document.getElementById('circulo').checked) {
+            if (limitePontos === '2') {
                 if (markers.getLayers().length >= 1) {
                     removeFirstLayer()
                 }
-            } else {
+            } else if (limitePontos === '1') {
                 if (markers.getLayers().length >= 4) {
                     removeFirstLayer()
                 }
@@ -409,12 +461,36 @@ export default {
                 }
             } else {
                 if (desenhos.getLayers().length) {
-                    console.log(testaponto())
+                    //console.log(testaponto())
                     const lat = e.latlng.lat
                     const lng = e.latlng.lng
+                    markers.clearLayers()
+                    const marker = L.marker(e.latlng)
+                    marker.addTo(markers)
+                    marker.openPopup()
+                    const markerEsperando = `Carregando...`
+                    marker.bindPopup(`<div>${markerEsperando}</div>`)
+                    const markerDentro = `marker dentro`
+                    const markerFora = `marker fora`
                     axios.post('/empresa/pontos/validarPontoDentro/' + getid(), { lat, lng })
-                        .then(r => console.log(r.data))
-                        .catch(e => console.log(e.message))
+                        .then(r => {
+                            console.log(r.data)
+                            if (r.data) {
+                                marker.setPopupContent(`<div>${markerDentro}</div>`)
+                            } else {
+                                marker.setPopupContent(`<div>${markerFora}</div>`)
+                            }
+                            if (!marker.isPopupOpen()) {
+                                marker.openPopup()
+                            }
+                        })
+                        .catch(e => {
+                            console.log(e.message)
+                            marker.setPopupContent(`<div>Error!</div>`)
+                            if (!marker.isPopupOpen()) {
+                                marker.openPopup()
+                            }
+                        })
                 }
             }
 

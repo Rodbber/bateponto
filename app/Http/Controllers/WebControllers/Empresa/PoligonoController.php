@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\WebControllers\Empresa;
 
 use App\Http\Controllers\Controller;
-use App\Models\BatepontoQuadrilateros;
+use App\Models\BatepontoPoligono;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class QuadrilaterosController extends Controller
+class PoligonoController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,7 +18,7 @@ class QuadrilaterosController extends Controller
     public function index()
     {
         try {
-            return BatepontoQuadrilateros::withTrashed()->get();
+            return BatepontoPoligono::withTrashed()->get();
         } catch (\Throwable $th) {
             throw $th;
         }
@@ -29,9 +29,9 @@ class QuadrilaterosController extends Controller
         $user = Auth::guard('empresa')->user();
         $id = $user->id;
         try {
-            $pontos = BatepontoQuadrilateros::withTrashed()->where('empresa_user_id', $id)->get();
+            $pontos = BatepontoPoligono::withTrashed()->where('empresa_user_id', $id)->get();
             return $pontos->map(function($v){
-                $v['tipo'] = 'QUADRILATERO';
+                $v['tipo'] = 'POLIGONO';
                 return $v;
             });
         } catch (\Throwable $th) {
@@ -65,8 +65,9 @@ class QuadrilaterosController extends Controller
         $user = Auth::guard('empresa')->user();
         $dadosValidados['empresa_user_id'] = $user->id;
         $dadosValidados['pontos'] = json_encode($dadosValidados['pontos']);
+
         try {
-            BatepontoQuadrilateros::create($dadosValidados);
+            BatepontoPoligono::create($dadosValidados);
             return response('success', 200);
         } catch (\Throwable $th) {
             throw $th;
@@ -81,7 +82,7 @@ class QuadrilaterosController extends Controller
      */
     public function show($id)
     {
-        return BatepontoQuadrilateros::find($id);
+        return BatepontoPoligono::find($id);
     }
 
     /**
@@ -90,23 +91,9 @@ class QuadrilaterosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id, Request $request)
+    public function edit($id)
     {
-        $dadosValidados = Validator::make($request->all(),[
-            'pontos' => 'required|array:lat,lng',
-            'nome' => 'required|string',
-        ])->validated();
-
-        $user = Auth::guard('empresa')->user();
-        $dadosValidados['empresa_user_id'] = $user->id;
-        $dadosValidados['pontos'] = json_encode($dadosValidados['pontos']);
-
-        try {
-            BatepontoQuadrilateros::find($id)->update($dadosValidados);
-            return response('success', 200);
-        } catch (\Throwable $th) {
-            throw $th;
-        }
+        //
     }
 
     /**
@@ -118,7 +105,21 @@ class QuadrilaterosController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $dadosValidados = Validator::make($request->all(),[
+            'pontos' => 'required|array:lat,lng',
+            'nome' => 'required|string',
+        ])->validated();
+
+        $user = Auth::guard('empresa')->user();
+        $dadosValidados['empresa_user_id'] = $user->id;
+        $dadosValidados['pontos'] = json_encode($dadosValidados['pontos']);
+
+        try {
+            BatepontoPoligono::find($id)->update($dadosValidados);
+            return response('success', 200);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     /**
