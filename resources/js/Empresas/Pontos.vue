@@ -7,6 +7,7 @@
                 <o-tabs v-model="activeTab" :multiline="multiline">
                     <o-tab-item :value="1" label="Pontos cadastrados">
                         <div class="mt-5">
+
                             <o-table :data="isEmpty ? [] : data" :bordered="isBordered" :striped="isStriped"
                                 :narrowed="isNarrowed" :hoverable="isHoverable" :loading="isLoading"
                                 :focusable="isFocusable" :mobile-cards="hasMobileCards">
@@ -43,22 +44,22 @@
                                         </button>
                                     </div>
                                 </o-table-column>
-
-                                <!-- <o-table-column field="last_name" label="Last Name" v-slot="props">
-                                    {{ props.row.last_name }}
-                                </o-table-column> -->
-
-                                <!-- <o-table-column field="date" label="Date" position="centered" v-slot="props">
-                                    {{ new Date(props.row.date).toLocaleDateString() }}
-                                </o-table-column>
-
-                                <o-table-column label="Gender" v-slot="props">
-                                    <span>
-                                        <o-icon pack="fas" :icon="props.row.gender === 'Male' ? 'mars' : 'venus'">
-                                        </o-icon>
-                                        {{ props.row.gender }}
-                                    </span>
-                                </o-table-column> -->
+                                <section class="section" slot="empty">
+                                    <div class="content has-text-grey has-text-centered">
+                                        <template v-if="isLoading">
+                                            <p>
+                                                <mdicon name="dots-horizontal" />
+                                            </p>
+                                            <p>Procurando registros...</p>
+                                        </template>
+                                        <template v-else>
+                                            <p>
+                                                <mdicon name="emoticon-sad" />
+                                            </p>
+                                            <p>Nenhum registro encontrado&hellip;</p>
+                                        </template>
+                                    </div>
+                                </section>
                             </o-table>
                         </div>
                     </o-tab-item>
@@ -213,21 +214,43 @@ export default {
         }
     },
     methods: {
+        error(message) {
+            const notif = this.$oruga.notification.open({
+                duration: 5000,
+                message: message,
+                position: 'top',
+                variant: 'danger',
+                closable: true,
+                /* onClose: () => {
+                    this.$oruga.notification.open('Custom notification closed!')
+                } */
+            })
+        },
+        success(message) {
+            this.$oruga.notification.open({
+                message: message,
+                position: 'top',
+                variant: 'success',
+                duration: 2000
+            })
+        },
         changeRadioValue(n) {
             console.log(n.target.value)
             this.tipoForma = n.target.value
         },
         testarPonto(row) {
+            this.clearDesenhos()
             this.id = row.id
             this.testaponto = true;
-            if (row.pontos) {
-                const pontos = JSON.parse(row.pontos)
-                map.setView(pontos[0], 7);
-                let r = L.rectangle(pontos, { transform: true, draggable: true }).addTo(desenhos)
-                r.dragging.enable();
+            const pontos = row.pontos ? JSON.parse(row.pontos) : null
+            if (pontos) {
+                if (row.tipo === 'QUADRILATERO') {
+                    this.quadrilatero(pontos, this.nome, 18)
+                } else if (row.tipo === 'POLIGONO') {
+                    this.poligono(pontos, this.nome, 18)
+                }
                 this.desenhos = true;
-                r.transform.enable({ rotation: true, uniformScaling: false });
-                r.setLatLngs(pontos);
+
             }
 
         },
@@ -240,89 +263,148 @@ export default {
                 day: 'numeric',
             })
         },
-        aplicarForma() {
-            if (markers.getLayers().length >= 2 && this.tipoForma === '1') {
-                const markersSelecionados = []
-                for (let i of markers.getLayers()) {
-                    markersSelecionados.push(i.getLatLng())
-                }
-                let r = L.rectangle(markersSelecionados, { transform: true, draggable: true }).addTo(desenhos)
-                r.dragging.enable();
-                this.desenhos = true;
-                //r.transform.enable();
-                r.transform.enable({ rotation: true, uniformScaling: false });
+        centerOfPolygon(arr) {
+            var twoTimesSignedArea = 0;
+            var cxTimes6SignedArea = 0;
+            var cyTimes6SignedArea = 0;
 
-                markers.clearLayers()
-            } else if (markers.getLayers().length >= 2 && this.tipoForma === '0') {
-                const markersSelecionados = []
-                for (let i of markers.getLayers()) {
-                    markersSelecionados.push(i.getLatLng())
-                }
-                this.desenhos = true;
-                var polygon = L.polygon(markersSelecionados, { transform: true, draggable: true }).addTo(desenhos);
+            var length = arr.length
+
+            var x = function (i) { return arr[i % length][0] };
+            var y = function (i) { return arr[i % length][1] };
+
+            for (var i = 0; i < arr.length; i++) {
+                var twoSA = x(i) * y(i + 1) - x(i + 1) * y(i);
+                twoTimesSignedArea += twoSA;
+                cxTimes6SignedArea += (x(i) + x(i + 1)) * twoSA;
+                cyTimes6SignedArea += (y(i) + y(i + 1)) * twoSA;
+            }
+            var sixSignedArea = 3 * twoTimesSignedArea;
+            return isNaN(cxTimes6SignedArea / sixSignedArea) || isNaN(cyTimes6SignedArea / sixSignedArea) ? null : [cxTimes6SignedArea / sixSignedArea, cyTimes6SignedArea / sixSignedArea];
+        },
+        poligono(coords, nome = null, zoom = null) {
+            var polygon = L.polygon(coords, { transform: true, draggable: true }).addTo(desenhos);
+            setTimeout(() => {
                 polygon.dragging.enable();
                 polygon.transform.enable({ rotation: true, uniformScaling: false });
+            }, 100);
+
+
+            if (nome) {
+                polygon.bindPopup(`<div>Nome des ponto:${nome}</div>`)
+                polygon.openPopup()
+            }
+
+            if (zoom) {
+                const centro = this.centerOfPolygon(coords.map(c => [c.lat, c.lng]))
+
+                if (centro) {
+                    map.setView(centro, zoom)
+                } else {
+                    map.setView(coords[0], zoom)
+                }
+            }
+        },
+        quadrilatero(coords, nome = null, zoom = null) {
+            let r = L.rectangle(coords, { transform: true, draggable: true }).addTo(desenhos)
+
+            setTimeout(() => {
+                r.dragging.enable();
+                r.transform.enable({ rotation: true, uniformScaling: false });
+            }, 100);
+            r.setLatLngs(coords);
+            if (nome) {
+                r.bindPopup(`<div>${nome}</div>`)
+                r.openPopup()
+            }
+
+            if (zoom) {
+                const centro = this.centerOfPolygon(coords.map(c => [c.lat, c.lng]))
+                if (centro) {
+                    map.setView(centro, zoom)
+                } else {
+                    map.setView(coords[0], zoom)
+                }
+            }
+        },
+        aplicarForma() {
+            const variosPontos = markers.getLayers().length
+            if (variosPontos >= 2) {
+                const markersSelecionados = []
+                for (let i of markers.getLayers()) {
+                    markersSelecionados.push(i.getLatLng())
+                }
+                if (this.tipoForma === '1') {
+                    this.quadrilatero(markersSelecionados, this.nome, 18)
+                } else if (this.tipoForma === '0') {
+                    this.poligono(markersSelecionados, this.nome, 18)
+                }
+                //const coordCentro = this.centerOfPolygon(markersSelecionados.map(c => [c.lat, c.lng]))
+                this.desenhos = true;
                 markers.clearLayers()
+                /* const marker = L.marker(coordCentro)
+                marker.addTo(markers) */
             }
         },
         editaPonto(row) {
+            this.clearDesenhos()
             this.id = row.id
             this.activeTab = '0'
             this.nome = row.nome
             const pontos = row.pontos ? JSON.parse(row.pontos) : null
             if (row.tipo === 'QUADRILATERO' && pontos) {
-                //console.log(pontos)
-                map.setView(pontos[0], 7);
-                let r = L.rectangle(pontos, { transform: true, draggable: true }).addTo(desenhos)
-                r.dragging.enable();
+                this.quadrilatero(pontos, this.nome, 18)
                 this.desenhos = true;
-                //r.transform.enable();
-                r.transform.enable({ rotation: true, uniformScaling: false });
             } else if (row.tipo === 'POLIGONO' && pontos) {
-                map.setView(pontos[0], 7);
                 this.desenhos = true;
-                var polygon = L.polygon(pontos, { transform: true, draggable: true }).addTo(desenhos);
-                polygon.dragging.enable();
-                polygon.transform.enable({ rotation: true, uniformScaling: false });
-                //markers.clearLayers()
+                this.poligono(pontos, this.nome, 18)
             }
+            markers.clearLayers()
         },
         salvarPonto() {
             const layer = desenhos.getLayers()[0]
             if (layer instanceof L.Rectangle) {
                 const pontos = layer.getLatLngs()[0]
-                /* console.log(pontos)
-                console.log(layer) */
                 if (!this.id) {
                     axios.post('/empresa/pontos/quadrilatero/createPonto', { pontos, nome: this.nome })
                         .then(r => {
-                            //console.log(r.data)
+                            this.success('Quadrilatero cadastrado')
                         })
-                        .catch(e => console.log(e.message))
+                        .catch(e => {
+                            console.log(e.message)
+                            this.error('Erro ao cadastrar quadrilatero')
+                        })
                 } else {
                     axios.post('/empresa/pontos/quadrilatero/update/' + this.id, { pontos, nome: this.nome })
                         .then(r => {
-                            //console.log(r.data)
+                            this.success('Quadrilatero editado')
                         })
-                        .catch(e => console.log(e.message))
+                        .catch(e => {
+                            console.log(e.message)
+                            this.error('Erro ao editar quadrilatero')
+                        })
                 }
 
             } else if (layer instanceof L.Polygon) {
                 const pontos = layer.getLatLngs()[0]
-                /* console.log(pontos)
-                console.log(layer) */
                 if (!this.id) {
                     axios.post('/empresa/pontos/poligono/createPonto', { pontos, nome: this.nome })
                         .then(r => {
-                            //console.log(r.data)
+                            this.success('Poligono cadastrado')
                         })
-                        .catch(e => console.log(e.message))
+                        .catch(e => {
+                            console.log(e.message)
+                            this.error('Erro ao cadastrar poligono')
+                        })
                 } else {
                     axios.post('/empresa/pontos/poligono/update/' + this.id, { pontos, nome: this.nome })
                         .then(r => {
-                            //console.log(r.data)
+                            this.success('Quadrilatero editado')
                         })
-                        .catch(e => console.log(e.message))
+                        .catch(e => {
+                            console.log(e.message)
+                            this.error('Erro ao editar poligono')
+                        })
                 }
             }
 
@@ -340,18 +422,24 @@ export default {
             return desenhos
         },
         clearDesenhos() {
-            markers.clearLayers()
+            if (desenhos.getLayers().length) {
+                if (desenhos.getLayers()[0] instanceof L.Rectangle || desenhos.getLayers()[0] instanceof L.Polygon) {
+                    desenhos.getLayers()[0].transform.disable()
+                }
+                desenhos.clearLayers()
+                this.desenhos = false;
+            }
+
         },
         clearMarkers() {
-            if (desenhos.getLayers()[0] instanceof L.Rectangle || desenhos.getLayers()[0] instanceof L.Polygon) {
-                desenhos.getLayers()[0].transform.disable()
+            if (markers.getLayers().length) {
+                markers.clearLayers()
             }
-            desenhos.clearLayers()
-            this.desenhos = false;
         },
         clearAll() {
             this.clearMarkers()
             this.clearDesenhos()
+            map.setView([-15.797076100943771, -47.87551860828078], 2);
         },
         getPontos() {
             this.data = []
@@ -387,6 +475,7 @@ export default {
             if (n === 1) {
                 this.clearAll()
                 this.getPontos()
+                //map.setView([-15.797076100943771, -47.87551860828078], 2);
                 this.id = null
                 this.nome = null
             } else {
@@ -466,15 +555,17 @@ export default {
                     const lng = e.latlng.lng
                     markers.clearLayers()
                     const marker = L.marker(e.latlng)
+                    //marker.dragging.enable();
                     marker.addTo(markers)
-                    marker.openPopup()
-                    const markerEsperando = `Carregando...`
+
+                    const markerEsperando = `Verificando...`
                     marker.bindPopup(`<div>${markerEsperando}</div>`)
+                    marker.openPopup()
                     const markerDentro = `marker dentro`
                     const markerFora = `marker fora`
                     axios.post('/empresa/pontos/validarPontoDentro/' + getid(), { lat, lng })
                         .then(r => {
-                            console.log(r.data)
+                            //console.log(r.data)
                             if (r.data) {
                                 marker.setPopupContent(`<div>${markerDentro}</div>`)
                             } else {

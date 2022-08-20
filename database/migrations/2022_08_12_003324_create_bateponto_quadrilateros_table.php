@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreign('empresa_user_id')->references('id')->on('empresa_users');
             $table->string('nome');
             $table->string('pontos',1000);
-            $table->string('tipo')->default('QUADRILATERO');
+            //$table->string('tipo')->default('QUADRILATERO');
             $table->softDeletes();
             $table->timestamps();
         });

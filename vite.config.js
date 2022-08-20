@@ -14,9 +14,11 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/css/app.css',
+                'resources/assets/sass/app.scss',
                 'resources/js/app.js',
             ],
             refresh: true,
         }),
+
     ],
 });

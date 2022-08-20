@@ -15,7 +15,7 @@ Route::middleware('auth:empresa')->group(function () {
     Route::post('/empresa/pontos/quadrilatero/update/{id}', [QuadrilaterosController::class, 'edit']);
 
     Route::post('/empresa/pontos/poligono/createPonto', [PoligonoController::class, 'store']);
-    Route::post('/empresa/pontos/poligono/update/{id}', [PoligonoController::class, 'edit']);
+    Route::post('/empresa/pontos/poligono/update/{id}', [PoligonoController::class, 'update']);
 
     Route::post('/empresa/pontos/validarPontoDentro/{id}', [VerificarDentroPontosController::class, 'verificarSeEstaDentroDeAlgumPonto']);
 
