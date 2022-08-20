@@ -5,6 +5,7 @@ import Alpine from 'alpinejs';
 import {createApp, h} from 'vue'
 
 import App from './App.vue'
+import AdminPanel from './Admin/AdminPanel.vue'
 import Pontos from './Empresas/Pontos.vue'
 
 import Oruga from '@oruga-ui/oruga-next';
@@ -13,6 +14,7 @@ import '@oruga-ui/oruga-next/dist/oruga-full.css';
 //Vue.use(Buefy)
 const newApp = createApp(App)
 const empresasPontos = createApp(Pontos)
+const adminPanel = createApp(AdminPanel)
 empresasPontos.use(Oruga);
 //newApp.use(Buefy)
 window.Alpine = Alpine;
@@ -20,3 +22,4 @@ window.Alpine = Alpine;
 Alpine.start()
 newApp.mount("#app")
 empresasPontos.mount("#pontosApp")
+adminPanel.mount("#adminPanel")

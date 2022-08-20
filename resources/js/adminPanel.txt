@@ -1,0 +1,16 @@
+import './bootstrap';
+
+import Alpine from 'alpinejs';
+
+import {createApp, h} from 'vue'
+
+import AdminPanel from './adminPanel.vue'
+import '@oruga-ui/oruga-next/dist/oruga-full.css';
+
+//Vue.use(Buefy)
+const newApp = createApp(AdminPanel);
+//newApp.use(Buefy)
+window.Alpine = Alpine;
+
+Alpine.start()
+newApp.mount("#adminPanel")

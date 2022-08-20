@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\WebControllers\Admin\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\WebControllers\Admin\Auth\AuthenticatedSessionController as AdminAuthenticate;
 use App\Http\Controllers\WebControllers\Admin\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\WebControllers\Admin\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\WebControllers\Admin\Auth\EmailVerificationPromptController;
@@ -16,10 +16,10 @@ Route::middleware('guest:admin')->group(function () {
 
     Route::post('admin/register', [RegisteredUserController::class, 'store']);
 
-    Route::get('admin/login', [AuthenticatedSessionController::class, 'create'])
+    Route::get('admin/login', [AdminAuthenticate::class, 'create'])
                 ->name('admin.login');
 
-    Route::post('admin/login', [AuthenticatedSessionController::class, 'store']);
+    Route::post('admin/login', [AdminAuthenticate::class, 'store']);
 
     Route::get('admin/forgot-password', [PasswordResetLinkController::class, 'create'])
                 ->name('admin.password.request');
@@ -51,6 +51,6 @@ Route::middleware('auth:admin')->group(function () {
 
     Route::post('admin/confirm-password', [ConfirmablePasswordController::class, 'store']);
 
-    Route::post('admin/logout', [AuthenticatedSessionController::class, 'destroy'])
+    Route::post('admin/logout', [AdminAuthenticate::class, 'destroy'])
                 ->name('admin.logout');
 });
