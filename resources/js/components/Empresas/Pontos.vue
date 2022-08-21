@@ -44,7 +44,7 @@
                                         </button>
                                     </div>
                                 </o-table-column>
-                                <section class="section" slot="empty">
+                                <section class="section" v-if="isEmpty">
                                     <div class="content has-text-grey has-text-centered">
                                         <template v-if="isLoading">
                                             <p>
@@ -146,44 +146,17 @@ let markers
 let desenhos
 
 export default {
+    name:'PontosEmpresa',
+    created() {
+        axios.get('/empresa/user')
+            .then(r => {
+                if (r.data) {
+                    this.$store.commit('setEmpresa', r.data)
+                }
+            })
+    },
     data: () => {
-        const data = [
-            /* {
-                id: 1,
-                first_name: 'Jesse',
-                last_name: 'Simmons',
-                date: '2016/10/15 13:43:27',
-                gender: 'Male'
-            },
-            {
-                id: 2,
-                first_name: 'John',
-                last_name: 'Jacobs',
-                date: '2016/12/15 06:00:53',
-                gender: 'Male'
-            },
-            {
-                id: 3,
-                first_name: 'Tina',
-                last_name: 'Gilbert',
-                date: '2016/04/26 06:26:28',
-                gender: 'Female'
-            },
-            {
-                id: 4,
-                first_name: 'Clarence',
-                last_name: 'Flores',
-                date: '2016/04/10 10:28:46',
-                gender: 'Male'
-            },
-            {
-                id: 5,
-                first_name: 'Anne',
-                last_name: 'Lee',
-                date: '2016/12/06 14:38:38',
-                gender: 'Female'
-            } */
-        ]
+        const data = []
 
         return {
             map: null,
@@ -214,6 +187,7 @@ export default {
         }
     },
     methods: {
+
         error(message) {
             const notif = this.$oruga.notification.open({
                 duration: 5000,
@@ -443,6 +417,7 @@ export default {
         },
         getPontos() {
             this.data = []
+            //return;
             axios.get('/empresa/pontos/poligono/get')
                 .then(r => {
                     if (r.data) {
@@ -484,6 +459,7 @@ export default {
         }
     },
     mounted() {
+        //console.log(this.$store.state.empresa)
         this.tipoForma = '0'
         this.getPontos()
         map = L.map('map', {
@@ -563,6 +539,7 @@ export default {
                     marker.openPopup()
                     const markerDentro = `marker dentro`
                     const markerFora = `marker fora`
+                    //console.log(this.$store.state.empresa)
                     axios.post('/empresa/pontos/validarPontoDentro/' + getid(), { lat, lng })
                         .then(r => {
                             //console.log(r.data)

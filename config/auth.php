@@ -40,6 +40,10 @@ return [
             'driver' => 'session',
             'provider' => 'empresa',
         ],
+        'funcionario' => [
+            'driver' => 'session',
+            'provider' => 'funcionario',
+        ],
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
@@ -67,6 +71,10 @@ return [
         'empresa' => [
             'driver' => 'eloquent',
             'model' => App\Models\EmpresaUsers::class,
+        ],
+        'funcionario' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\FuncionarioUser::class,
         ],
         'users' => [
             'driver' => 'eloquent',
@@ -103,6 +111,12 @@ return [
         ],
         'empresa' => [
             'provider' => 'empresa',
+            'table' => 'password_resets',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+        'funcionario' => [
+            'provider' => 'funcionario',
             'table' => 'password_resets',
             'expire' => 60,
             'throttle' => 60,

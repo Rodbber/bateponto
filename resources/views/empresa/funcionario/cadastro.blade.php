@@ -1,5 +1,5 @@
 <x-app-layout-empresa>
-    <div id="pontosApp">
 
+    <div id="appCadastroFuncionario">
     </div>
 </x-app-layout-empresa>

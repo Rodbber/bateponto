@@ -65,8 +65,36 @@ class VerificarDentroPontosController extends Controller
                 return $value;
             }
         }
-
         $poligonos = BatepontoPoligono::where('empresa_user_id', $idEmp)->get();
+        foreach ($poligonos as $key => $value) {
+            $latlngs = json_decode($value['pontos'], true);
+            $ver = $this->dentroDaAreaPoligono($latlngs, $dadosValidados['lat'], $dadosValidados['lng']);
+            if ($ver) {
+                return $value;
+            }
+        }
+        return false;
+    }
+
+    public function verificarSeEstaDentroDeAlgumPontoExpecifico($id, Request $request)
+    {
+        $dadosValidados = Validator($request->all(),[
+            'lat' => 'required|numeric',
+            'lng' => 'required|numeric',
+        ])->validated();
+
+        /* $user = Auth::guard('empresa')->user();
+        $idEmp = $user->id; */
+        $quadrilatero = BatepontoQuadrilateros::find($id)->get();
+        foreach ($quadrilatero as $key => $value) {
+            $latlngs = json_decode($value['pontos'], true);
+            $ver = $this->dentroDaAreaPoligono($latlngs, $dadosValidados['lat'], $dadosValidados['lng']);
+            if ($ver) {
+                return $value;
+            }
+        }
+
+        $poligonos = BatepontoPoligono::find($id)->get();
         foreach ($poligonos as $key => $value) {
             $latlngs = json_decode($value['pontos'], true);
             $ver = $this->dentroDaAreaPoligono($latlngs, $dadosValidados['lat'], $dadosValidados['lng']);
