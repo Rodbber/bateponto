@@ -21,3 +21,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('/teste/request', function(){
     return 'este teste funcionou';
 });
+$funcionario = glob(__DIR__ . '/Funcionario/*.php');
+foreach ($funcionario as $file) {
+    // prevents including file itself
+    if ($file != __FILE__) {
+        require($file);
+    }
+}
+

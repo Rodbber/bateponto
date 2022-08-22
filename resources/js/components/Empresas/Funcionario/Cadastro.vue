@@ -42,9 +42,45 @@ export default {
     return {
       id: null,
       form: {},
+      formResponse: {},
     };
   },
   methods: {
+    componentToast(data) {
+      this.$oruga.notification.open({
+        message: `
+    <div class="modal-card" style="width: auto">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Sucesso!</p>
+      </header>
+      <div>
+      <div class="flex justify-end text-xs"><button id="copiarValor">Copiar</button></div>
+        <div class="flex">
+          <span class="font-bold">Email:</span>
+          <span>${data.email}</span>
+        </div>
+        <div class="flex">
+          <span class="font-bold">Senha:</span>
+          <span>${data.pass}</span>
+        </div>
+      </div>
+    </div>
+    `,
+        closable: true,
+        position: "bottom-right",
+        variant: "success",
+        indefinite: true,
+      });
+      const response = this.getFormResponse;
+      document
+        .getElementById("copiarValor")
+        .addEventListener("click", function (e) {
+          console.log("teste");
+          navigator.clipboard.writeText(
+            `Email: ${response().email}, password: ${response().pass}`
+          );
+        });
+    },
     cadastrarFuncionario() {
       let method = "POST";
       let url = "/empresa/funcionario/create";
@@ -58,10 +94,17 @@ export default {
         url,
         data: this.form,
       })
-      .then(r => {
-        console.log(r.data)
-      })
-      .catch(e => console.log(e.message))
+        .then((r) => {
+          if (r.data) {
+            console.log(r.data);
+            this.formResponse = r.data;
+            this.componentToast(this.formResponse);
+          }
+        })
+        .catch((e) => console.log(e.message));
+    },
+    getFormResponse() {
+      return this.formResponse;
     },
   },
 };

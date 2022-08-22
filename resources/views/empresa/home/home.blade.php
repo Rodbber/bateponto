@@ -1,6 +1,6 @@
 <x-app-layout-empresa>
     <form method="GET" action="{{ route('empresa.funcionario.cadastrar') }}">
-        <x-button class="ml-3 mt-3">
+        <x-button class="ml-5 mt-3 bg-green-500">
             {{ __('Novo') }}
         </x-button>
     </form>
