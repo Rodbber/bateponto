@@ -17,4 +17,6 @@ Route::middleware('auth:empresa')->group(function () {
     Route::get('/empresa/funcionarios', [FuncionarioUserController::class, 'indexEmpresa']);
 
     Route::get('empresa/user', [EmpresaController::class, 'showLogada']);
+
+    Route::get('empresa/redefinirsenha/{id}', [FuncionarioUserController::class, 'redefinirSenha']);
 });

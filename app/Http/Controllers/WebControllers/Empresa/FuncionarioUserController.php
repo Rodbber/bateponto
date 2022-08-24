@@ -81,6 +81,16 @@ class FuncionarioUserController extends Controller
         }
     }
 
+    public function redefinirSenha($id){
+        $password = Str::random(6);
+        try {
+            FuncionarioUser::find($id)->update(['password'=>Hash::make($password)]);
+            return response(['pass' => $password], 200);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
     /**
      * Display the specified resource.
      *

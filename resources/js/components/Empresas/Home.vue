@@ -27,25 +27,26 @@
         <o-table-column field=".funcionario.email" label="Email" v-slot="props">
           {{ props.row.funcionario.email }}
         </o-table-column>
-        <!-- <o-table-column v-slot="props">
+        <o-table-column v-slot="props">
           <div class="buttons">
-            <button
+            <!-- <button
               v-if="!props.row.deleted_at"
               @click.prevent="testarPonto(props.row)"
               class="button is-small mr-4"
               type="button"
             >
               Testar
-            </button>
+            </button> -->
             <button
+              title="Apenas para testes"
               v-if="!props.row.deleted_at"
-              @click.prevent="editaPonto(props.row)"
+              @click.prevent="redefinirSenha(props.row)"
               class="button is-small mr-4"
               type="button"
             >
-              Editar
+              Redefinir senha
             </button>
-            <button
+            <!-- <button
               v-if="props.row.deleted_at"
               class="button is-small"
               type="button"
@@ -61,9 +62,9 @@
             </button>
             <button v-else class="button is-small is-danger" type="button">
               Excluir
-            </button>
+            </button> -->
           </div>
-        </o-table-column> -->
+        </o-table-column>
         <section class="section" v-if="isEmpty">
           <div class="content has-text-grey has-text-centered">
             <template v-if="isLoading">
@@ -86,6 +87,31 @@
 </template>
 
 <script>
+const notificaForm = {
+  //props: ["password"],
+  template: `
+    <div class="modal-card" style="width: auto">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Sucesso!</p>
+      </header>
+      <div>
+      <div class="flex justify-end text-xs"><button id="copiarValor" @click="copiar">Copiar</button></div>
+        <div class="flex">
+          <span class="font-bold">Senha:</span>
+          <input class="pl-1 w-auto bg-transparent outline-0" id="textCopy" readonly value="teste valor"/>
+        </div>
+      </div>
+    </div>
+    `,
+  methods: {
+    copiar() {
+      let copyText = document.querySelector("#textCopy");
+      copyText.select();
+      document.execCommand("copy");
+      document.getElementById("copiarValor").focus();
+    },
+  },
+};
 export default {
   name: "HomeEmpresa",
   data: function () {
@@ -104,6 +130,47 @@ export default {
   },
 
   methods: {
+    componentN(pass) {
+      this.$oruga.notification.open({
+        message: `
+    <div class="modal-card" style="width: auto">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Sucesso!</p>
+      </header>
+      <div>
+      <div class="flex justify-end text-xs"><button id="copiarValor">Copiar</button></div>
+        <div class="flex">
+          <span class="font-bold">Senha:</span>
+          <input class="pl-1 w-auto bg-transparent outline-0" id="textCopy" readonly value="${pass}"/>
+        </div>
+      </div>
+    </div>
+    `,
+        closable: true,
+        position: "bottom-right",
+        variant: "success",
+        indefinite: true,
+      });
+      function copiar() {
+        let copyText = document.querySelector("#textCopy");
+        copyText.select();
+        document.execCommand("copy");
+        document.getElementById("copiarValor").focus();
+      }
+
+      document.getElementById("copiarValor").removeEventListener('click', copiar)
+      document.getElementById("copiarValor").addEventListener('click', copiar)
+    },
+    redefinirSenha(row) {
+      axios
+        .get("/empresa/redefinirsenha/" + row.funcionario.id)
+        .then((r) => {
+          if (r.data) {
+            this.componentN(r.data.pass);
+          }
+        })
+        .catch((e) => console.log(e.message));
+    },
     getData() {
       axios
         .get("/empresa/funcionarios")

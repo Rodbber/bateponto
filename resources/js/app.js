@@ -2,7 +2,7 @@ import './bootstrap';
 
 import Alpine from 'alpinejs';
 
-import {createApp, h} from 'vue'
+import {createApp} from 'vue/dist/vue.esm-bundler'
 
 import HomeEmpresa from '@/components/Empresas/Home.vue'
 import Pontos from '@/components/Empresas/Pontos.vue'

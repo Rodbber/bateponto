@@ -63,6 +63,7 @@ export default {
           <span class="font-bold">Senha:</span>
           <span>${data.pass}</span>
         </div>
+        <input class="pl-1 w-auto bg-transparent outline-0 text-transparent" id="textCopy" readonly value="email:${data.email}, senha:${data.pass}"/>
       </div>
     </div>
     `,
@@ -71,14 +72,14 @@ export default {
         variant: "success",
         indefinite: true,
       });
-      const response = this.getFormResponse;
+      //const response = this.getFormResponse;
       document
         .getElementById("copiarValor")
         .addEventListener("click", function (e) {
-          console.log("teste");
-          navigator.clipboard.writeText(
-            `Email: ${response().email}, password: ${response().pass}`
-          );
+          let copyText = document.querySelector("#textCopy");
+          copyText.select();
+          document.execCommand("copy");
+          document.getElementById("copiarValor").focus();
         });
     },
     cadastrarFuncionario() {
