@@ -15,10 +15,10 @@ class FuncionarioPontoInicio extends Model
     }
 
     public function funcionario_ponto_final(){
-        return $this->hasOne(FuncionarioPontoFim::class);
+        return $this->hasOne(FuncionarioPontoFim::class, 'funcionario_ponto_inicio_id');
     }
 
     public function funcionario_ponto_pausa(){
-        return $this->hasOne(FuncionarioPontoPausa::class);
+        return $this->hasOne(FuncionarioPontoPausa::class, 'funcionario_ponto_inicio_id');
     }
 }

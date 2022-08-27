@@ -4,6 +4,7 @@ namespace App\Http\Controllers\WebControllers\Funcionario;
 
 use App\Http\Controllers\Controller;
 use App\Models\EmpresaFuncionario;
+use App\Models\FuncionarioPontoFim;
 use App\Models\FuncionarioPontoInicio;
 use Illuminate\Http\Request;
 
@@ -36,9 +37,9 @@ class FuncionarioPontoController extends Controller
         $empresaFuncionario = EmpresaFuncionario::where('funcionario_user_id', $user->id)->first();
 
         try {
-            $pontoInicio = FuncionarioPontoInicio::latest()->where('empresa_funcionario_id', $empresaFuncionario)->first();
-            $pontoFim = FuncionarioPontoInicio::create(['empresa_funcionario_id' => $empresaFuncionario->id, 'funcionario_ponto_inicio_id' => $pontoInicio->id]);
-            return response('Ponto iniciado!', 200);
+            $pontoInicio = FuncionarioPontoInicio::latest()->where('empresa_funcionario_id', $empresaFuncionario->id)->first();
+            $pontoFim = FuncionarioPontoFim::create(['empresa_funcionario_id' => $empresaFuncionario->id, 'funcionario_ponto_inicio_id' => $pontoInicio->id]);
+            return response('Ponto finalizado!', 200);
         } catch (\Throwable $th) {
             throw $th;
         }

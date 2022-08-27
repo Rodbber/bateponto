@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class FuncionarioPontoFim extends Model
 {
     use HasFactory;
+    protected $table = "funcionario_ponto_fins";
     protected $fillable = ['empresa_funcionario_id', 'funcionario_ponto_inicio_id'];
 
     public function empresa_funcionario(){
