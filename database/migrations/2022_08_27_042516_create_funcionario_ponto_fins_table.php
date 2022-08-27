@@ -13,15 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('funcionario_funcoes', function (Blueprint $table) {
+        Schema::create('funcionario_ponto_fins', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('empresa_funcionario_id');
             $table->foreign('empresa_funcionario_id')->references('id')->on('empresa_funcionarios');
-            $table->string('funcao');
-            $table->time('inicio');
-            $table->time('fim');
-            $table->integer('tolerancia');
-            $table->softDeletes();
+            $table->unsignedBigInteger('funcionario_ponto_inicio_id');
+            $table->foreign('funcionario_ponto_inicio_id')->references('id')->on('funcionario_ponto_inicios');
             $table->timestamps();
         });
     }
@@ -33,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('funcionario_funcoes');
+        Schema::dropIfExists('funcionario_ponto_fins');
     }
 };

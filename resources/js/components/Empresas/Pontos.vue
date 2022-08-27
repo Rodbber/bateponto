@@ -107,8 +107,8 @@
                                     class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out w-full md:w-auto"
                                     @click="aplicarForma">Aplicar</button>
                             </div>
-                            <div class="flex flex-col w-full md:w-auto space-y-2">
-                                <div class="flex-1 md:flex-auto" v-if="desenhos">
+                            <div class="flex flex-col w-full md:w-auto space-y-2 py-2">
+                                <div class="flex-1 md:flex-auto">
                                     <button type="button"
                                         class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out w-full md:w-auto"
                                         @click="clearAll">Limpar</button>
@@ -413,7 +413,7 @@ export default {
         clearAll() {
             this.clearMarkers()
             this.clearDesenhos()
-            map.setView([-15.797076100943771, -47.87551860828078], 2);
+            //map.setView([-15.797076100943771, -47.87551860828078], 2);
         },
         getPontos() {
             this.data = []

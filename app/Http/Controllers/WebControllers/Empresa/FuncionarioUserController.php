@@ -5,9 +5,11 @@ namespace App\Http\Controllers\WebControllers\Empresa;
 use App\Http\Controllers\Controller;
 use App\Models\EmpresaFuncionario;
 use App\Models\FuncionarioFuncao;
+use App\Models\FuncionarioPausa;
 use App\Models\FuncionarioUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -29,7 +31,7 @@ class FuncionarioUserController extends Controller
         $user = Auth::guard('empresa')->user();
         $id = $user->id;
         try {
-            return EmpresaFuncionario::withTrashed()->with(['funcionario' => fn($q) => $q->withTrashed()])->where('empresa_user_id', $id)->get();
+            return EmpresaFuncionario::withTrashed()->with(['funcionario' => fn ($q) => $q->withTrashed()])->where('empresa_user_id', $id)->get();
         } catch (\Throwable $th) {
             throw $th;
         }
@@ -58,33 +60,57 @@ class FuncionarioUserController extends Controller
             'email' => 'required|email',
         ])->validated();
 
-        /* $dadosValidadosFuncao = Validator::make($request->all(), [
+        $dadosValidadosFuncao = Validator::make($request->all(), [
             'funcao' => 'required|string',
-            'comeco' => 'required|date_format:H:i',
-            'fim' => 'required|date_format:H:i|after:comeco',
-        ])->validated(); */
+            'inicio' => 'required|date_format:H:i',
+            'fim' => 'required|date_format:H:i|after:inicio',
+            'tolerancia' => 'required|numeric',
+        ])->validated();
+
+        $dadosValidadosPausas = Validator::make($request->all(), [
+            'pausas' => 'array',
+            'pausas.*.nome' => 'string',
+            'pausas.*.horario' => 'date_format:H:i',
+        ])->validated();
+
+        //return $dadosValidadosPausas;
 
         $password = Str::random(6);
 
         $dadosValidadosUser['password'] = Hash::make($password);
         $user = Auth::guard('empresa')->user();
         $id = $user->id;
+        DB::beginTransaction();
         try {
             $funcionario = FuncionarioUser::create($dadosValidadosUser);
-            $empresaFuncionario = array('empresa_user_id' => $id, 'funcionario_user_id' => $funcionario->id);
-            EmpresaFuncionario::create($empresaFuncionario);
-           /*  $dadosValidadosFuncao['empresa_funcionario_id'] = $funcionario->id;
-            FuncionarioFuncao::create($dadosValidadosFuncao); */
+            try {
+                $empresaFuncionario = array('empresa_user_id' => $id, 'funcionario_user_id' => $funcionario->id);
+                $empresaFuncionario = EmpresaFuncionario::create($empresaFuncionario);
+                $dadosValidadosFuncao['empresa_funcionario_id'] = $empresaFuncionario->id;
+                FuncionarioFuncao::create($dadosValidadosFuncao);
+                if ($dadosValidadosPausas) {
+                    foreach ($dadosValidadosPausas['pausas'] as $key => $value) {
+                        $value['empresa_funcionario_id'] = $empresaFuncionario->id;
+                        FuncionarioPausa::create($value);
+                    }
+                }
+            } catch (\Throwable $th) {
+                DB::rollBack();
+                throw $th;
+            }
+
+            DB::commit();
             return response(['email' => $funcionario->email, 'pass' => $password], 200);
         } catch (\Throwable $th) {
             throw $th;
         }
     }
 
-    public function redefinirSenha($id){
+    public function redefinirSenha($id)
+    {
         $password = Str::random(6);
         try {
-            FuncionarioUser::find($id)->update(['password'=>Hash::make($password)]);
+            FuncionarioUser::find($id)->update(['password' => Hash::make($password)]);
             return response(['pass' => $password], 200);
         } catch (\Throwable $th) {
             throw $th;

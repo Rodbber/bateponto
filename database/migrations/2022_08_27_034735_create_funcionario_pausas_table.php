@@ -13,15 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('funcionario_funcoes', function (Blueprint $table) {
+        Schema::create('funcionario_pausas', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('empresa_funcionario_id');
             $table->foreign('empresa_funcionario_id')->references('id')->on('empresa_funcionarios');
-            $table->string('funcao');
-            $table->time('inicio');
-            $table->time('fim');
-            $table->integer('tolerancia');
-            $table->softDeletes();
+            $table->string('nome');
+            $table->time('horario');
             $table->timestamps();
         });
     }
@@ -33,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('funcionario_funcoes');
+        Schema::dropIfExists('funcionario_pausas');
     }
 };
