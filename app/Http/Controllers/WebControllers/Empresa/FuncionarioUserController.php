@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\EmpresaFuncionario;
 use App\Models\FuncionarioFuncao;
 use App\Models\FuncionarioPausa;
+use App\Models\FuncionarioPontosPoligono;
+use App\Models\FuncionarioPontosQuadrilatero;
 use App\Models\FuncionarioUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -71,6 +73,13 @@ class FuncionarioUserController extends Controller
             'pausas' => 'array',
             'pausas.*.nome' => 'string',
             'pausas.*.horario' => 'date_format:H:i',
+            'pausas.*.tempo' => 'numeric',
+        ])->validated();
+
+        $dadosValidadosPontos = Validator::make($request->all(), [
+            'pontos' => 'required|array',
+            'pontos.*.id' => 'required|numeric',
+            'pontos.*.tipo' => 'required|string',
         ])->validated();
 
         //return $dadosValidadosPausas;
@@ -88,6 +97,20 @@ class FuncionarioUserController extends Controller
                 $empresaFuncionario = EmpresaFuncionario::create($empresaFuncionario);
                 $dadosValidadosFuncao['empresa_funcionario_id'] = $empresaFuncionario->id;
                 FuncionarioFuncao::create($dadosValidadosFuncao);
+                foreach ($dadosValidadosPontos['pontos'] as $key => $value) {
+                    //$value['empresa_funcionario_id'] = $empresaFuncionario->id;
+                    if ($value['tipo'] == 'QUADRILATERO') {
+                        FuncionarioPontosQuadrilatero::create([
+                            'empresa_funcionario_id' => $empresaFuncionario->id,
+                            'quadrilatero_id' => $value['id'],
+                        ]);
+                    } else {
+                        FuncionarioPontosPoligono::create([
+                            'empresa_funcionario_id' => $empresaFuncionario->id,
+                            'poligono_id' => $value['id'],
+                        ]);
+                    }
+                }
                 if ($dadosValidadosPausas) {
                     foreach ($dadosValidadosPausas['pausas'] as $key => $value) {
                         $value['empresa_funcionario_id'] = $empresaFuncionario->id;

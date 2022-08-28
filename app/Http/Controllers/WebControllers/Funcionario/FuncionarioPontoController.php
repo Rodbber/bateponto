@@ -30,8 +30,8 @@ class FuncionarioPontoController extends Controller
     public function finalizar(Request $request)
     {
         $user = $request->user();
-        /* $empresa_id = $request->empresa_id;
 
+        /* $empresa_id = $request->empresa_id;
         $empresaFuncionario = EmpresaFuncionario::where('empresa_user_id', $empresa_id)->where('funcionario_user_id', $user->id)->first(); */
 
         $empresaFuncionario = EmpresaFuncionario::where('funcionario_user_id', $user->id)->first();
@@ -47,7 +47,6 @@ class FuncionarioPontoController extends Controller
 
     public function getStatusPonto(Request $request){
         $user = $request->user();
-
         $empresaFuncionario = EmpresaFuncionario::where('funcionario_user_id', $user->id)->first();
 
         try {

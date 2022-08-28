@@ -22,4 +22,7 @@ Route::middleware('auth:empresa')->group(function () {
     Route::get('/empresa/pontos/quadrilatero/get', [QuadrilaterosController::class, 'indexEmpresa']);
     Route::get('/empresa/pontos/poligono/get', [PoligonoController::class, 'indexEmpresa']);
 
+    // get pontos desconsiderando desabilitados
+    Route::get('/empresa/pontos/quadrilatero/get/ativos', [QuadrilaterosController::class, 'indexEmpresaSemDesabilitados']);
+    Route::get('/empresa/pontos/poligono/get/ativos', [PoligonoController::class, 'indexEmpresaSemDesabilitados']);
 });

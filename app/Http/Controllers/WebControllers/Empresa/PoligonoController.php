@@ -39,6 +39,21 @@ class PoligonoController extends Controller
         }
     }
 
+    public function indexEmpresaSemDesabilitados()
+    {
+        $user = Auth::guard('empresa')->user();
+        $id = $user->id;
+        try {
+            $pontos = BatepontoPoligono::where('empresa_user_id', $id)->get();
+            return $pontos->map(function($v){
+                $v['tipo'] = 'POLIGONO';
+                return $v;
+            });
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
     /**
      * Show the form for creating a new resource.
      *

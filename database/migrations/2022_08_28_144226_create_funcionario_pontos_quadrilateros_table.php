@@ -13,13 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('funcionario_pausas', function (Blueprint $table) {
+        Schema::create('funcionario_pontos_quadrilateros', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('empresa_funcionario_id');
             $table->foreign('empresa_funcionario_id')->references('id')->on('empresa_funcionarios');
-            $table->string('nome');
-            $table->integer('tempo');
-            //$table->time('horario');
+            $table->unsignedBigInteger('quadrilatero_id');
+            $table->foreign('quadrilatero_id')->references('id')->on('bateponto_quadrilateros');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('funcionario_pausas');
+        Schema::dropIfExists('funcionario_pontos_quadrilateros');
     }
 };

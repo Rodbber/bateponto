@@ -39,6 +39,21 @@ class QuadrilaterosController extends Controller
         }
     }
 
+    public function indexEmpresaSemDesabilitados()
+    {
+        $user = Auth::guard('empresa')->user();
+        $id = $user->id;
+        try {
+            $pontos = BatepontoQuadrilateros::where('empresa_user_id', $id)->get();
+            return $pontos->map(function($v){
+                $v['tipo'] = 'QUADRILATERO';
+                return $v;
+            });
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
     /**
      * Show the form for creating a new resource.
      *
