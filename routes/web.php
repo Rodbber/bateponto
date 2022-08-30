@@ -36,3 +36,11 @@ foreach ($empresa as $file) {
         require($file);
     }
 }
+
+$funcionario = glob(__DIR__ . '/Funcionario/Web/*.php');
+foreach ($funcionario as $file) {
+    // prevents including file itself
+    if ($file != __FILE__) {
+        require($file);
+    }
+}

@@ -30,6 +30,11 @@ class RedirectIfAuthenticated
                         return redirect(RouteServiceProvider::ADMIN);
                     }
                     break;
+                case 'funcionario':
+                    if (Auth::guard($guard)->check()) {
+                        return redirect(RouteServiceProvider::FUNCIONARIO);
+                    }
+                    break;
 
                 default:
                     if (Auth::guard($guard)->check()) {
