@@ -21,7 +21,7 @@ class FuncionarioPontoController extends Controller
 
         try {
             $pontoInicio = FuncionarioPontoInicio::create(['empresa_funcionario_id' => $empresaFuncionario->id]);
-            return response('Ponto iniciado!', 200);
+            return response(['message' => 'Ponto iniciado.'], 200);
         } catch (\Throwable $th) {
             throw $th;
         }
@@ -39,7 +39,7 @@ class FuncionarioPontoController extends Controller
         try {
             $pontoInicio = FuncionarioPontoInicio::latest()->where('empresa_funcionario_id', $empresaFuncionario->id)->first();
             $pontoFim = FuncionarioPontoFim::create(['empresa_funcionario_id' => $empresaFuncionario->id, 'funcionario_ponto_inicio_id' => $pontoInicio->id]);
-            return response('Ponto finalizado!', 200);
+            return response(['message' => 'Ponto finalizado.'], 200);
         } catch (\Throwable $th) {
             throw $th;
         }
