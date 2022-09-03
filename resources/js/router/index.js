@@ -4,8 +4,8 @@ import HomeEmpresa from '@/components/Empresas/Home/Home.vue'
 import Relatorios from '@/components/Empresas/Home/Relatorios.vue'
 
 const routes = [
-    { path: '/home', name:'home-empresa', component: HomeEmpresa },
-    { path: '/relatorios-funcionario', name:'relatorios', component: Relatorios }
+    { path: '/empresa/home', name:'HomeEmpresa', component: HomeEmpresa },
+    { path: '/empresa/relatorios-funcionario', name:'Relatorios', component: Relatorios }
   ]
 
   // 3. Create the router instance and pass the `routes` option

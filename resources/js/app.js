@@ -4,7 +4,10 @@ import Alpine from 'alpinejs';
 
 import {createApp} from 'vue/dist/vue.esm-bundler'
 
-import HomeEmpresa from '@/components/Empresas/Home.vue'
+import router from '@/router';
+
+import Empresa from '@/components/Empresas/Home.vue'
+
 import Pontos from '@/components/Empresas/Pontos.vue'
 import CadastroFuncionario from '@/components/Empresas/Funcionario/Cadastro.vue'
 
@@ -17,12 +20,15 @@ import * as mdijs from '@mdi/js'
 
 import store from './store';
 
+
+
 const appf = createApp(AppFuncionario)
 
 //Vue.use(Buefy)
-const newApp = createApp(HomeEmpresa)
+const newApp = createApp(Empresa)
 .use(store)
 .use(Oruga)
+.use(router)
 .use(mdiVue,{
     icons: mdijs
 })
