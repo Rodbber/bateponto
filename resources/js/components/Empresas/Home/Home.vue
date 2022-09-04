@@ -1,6 +1,11 @@
 <template>
   <section class="w-full h-screen">
+
     <div class="w-full h-full p-5">
+        <div class="mb-4 ml-2">
+            <router-link to="/empresa/funcionario/cadastro" class="bg-green-500 px-4 py-2 rounded-md border-2 border-green-700 text-white font-bold">Novo</router-link>
+        </div>
+
       <o-table
         :data="isEmpty ? [] : data"
         :bordered="isBordered"
@@ -47,7 +52,7 @@
             >
               Relatorios
             </a> -->
-            <router-link to="/empresa/relatorios-funcionario" class="button is-small mr-4">Relatorios</router-link>
+            <router-link :to="{ name: 'relatorios', params: { id: props.row.id } }" class="button is-small mr-4">Relatorios</router-link>
             <button
               title="Apenas para testes"
               v-if="!props.row.deleted_at"

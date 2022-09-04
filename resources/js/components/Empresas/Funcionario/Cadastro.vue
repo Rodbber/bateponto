@@ -172,6 +172,7 @@
 
 <script>
 export default {
+  name: "FuncionarioNovo",
   data: () => {
     return {
       id: null,
