@@ -4,7 +4,7 @@ import Alpine from 'alpinejs';
 
 import {createApp} from 'vue/dist/vue.esm-bundler'
 
-import router from '@/router';
+
 
 import Empresa from '@/components/Empresas/Home.vue'
 
@@ -19,7 +19,7 @@ import mdiVue from 'mdi-vue/v3'
 import * as mdijs from '@mdi/js'
 
 import store from './store';
-
+import router from '@/router';
 
 
 const appf = createApp(AppFuncionario)

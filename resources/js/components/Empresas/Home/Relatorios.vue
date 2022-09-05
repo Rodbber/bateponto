@@ -85,6 +85,8 @@ export default {
           .then((r) => {
             if (r.data) {
               this.data = r.data;
+            }else {
+                this.isEmpty = true
             }
           })
           .catch((e) => console.log(e.message));

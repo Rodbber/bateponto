@@ -14,9 +14,9 @@ Route::middleware('auth:empresa')->group(function () {
             return view('empresa.home.home');
         })->where('any','.*')->name('empresa.home');
 
-    Route::get('/empresa/funcionario/cadastrar', function () {
+    /* Route::get('/empresa/funcionario/cadastrar', function () {
         return view('empresa.funcionario.cadastro');
-    })->name('empresa.funcionario.cadastrar');
+    })->name('empresa.funcionario.cadastrar'); */
 
     Route::get('/empresa/funcionarios', [FuncionarioUserController::class, 'indexEmpresa']);
 

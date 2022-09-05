@@ -3,7 +3,7 @@
 
     <div class="w-full h-full p-5">
         <div class="mb-4 ml-2">
-            <router-link to="/empresa/funcionario/cadastro" class="bg-green-500 px-4 py-2 rounded-md border-2 border-green-700 text-white font-bold">Novo</router-link>
+            <router-link :to="{name:'empresa.funcionario.cadastro'}" class="bg-green-500 px-4 py-2 rounded-md border-2 border-green-700 text-white font-bold">Novo</router-link>
         </div>
 
       <o-table
