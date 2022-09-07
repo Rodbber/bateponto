@@ -4,6 +4,8 @@ namespace App\Http\Controllers\WebControllers\Funcionario;
 
 use App\Http\Controllers\Controller;
 use App\Models\EmpresaFuncionario;
+use App\Models\FuncIntervaloFim;
+use App\Models\FuncIntervaloInicio;
 use App\Models\FuncionarioPontoFim;
 use App\Models\FuncionarioPontoInicio;
 use Illuminate\Http\Request;
@@ -50,7 +52,39 @@ class FuncionarioPontoController extends Controller
         $empresaFuncionario = EmpresaFuncionario::where('funcionario_user_id', $user->id)->first();
 
         try {
-            return FuncionarioPontoInicio::with('funcionario_ponto_final', 'funcionario_ponto_pausa')->latest()->where('empresa_funcionario_id', $empresaFuncionario->id)->first();
+            return FuncionarioPontoInicio::with('funcionario_ponto_final', 'func_intervalo_inicio.func_intervalo_fim')->latest()->where('empresa_funcionario_id', $empresaFuncionario->id)->first();
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
+    public function pausaInicio(Request $request){
+        $user = $request->user();
+        $empresaFuncionario = EmpresaFuncionario::where('funcionario_user_id', $user->id)->first();
+
+        //return $request->all();
+
+        try {
+            $intervaloInicio = FuncIntervaloInicio::create([
+                'empresa_funcionario_id' => $empresaFuncionario->id,
+                'funcionario_ponto_inicio_id' => $request->funcionario_ponto_inicio_id,
+                'funcionario_pausa_id' => $request->funcionario_pausa_id]);
+            return response(['message' => 'Intervalo iniciado.'], 200);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
+    public function pausaFim(Request $request){
+        $user = $request->user();
+        $empresaFuncionario = EmpresaFuncionario::where('funcionario_user_id', $user->id)->first();
+
+        try {
+            $intervaloFim = FuncIntervaloFim::create([
+                'empresa_funcionario_id' => $empresaFuncionario->id,
+                'func_intervalo_inicio_id' => $request->func_intervalo_inicio_id
+            ]);
+            return response(['message' => 'Intervalo finalizado.'], 200);
         } catch (\Throwable $th) {
             throw $th;
         }

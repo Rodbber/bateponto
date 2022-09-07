@@ -13,13 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('funcionario_pausas', function (Blueprint $table) {
+        Schema::create('func_intervalo_fins', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('empresa_funcionario_id');
             $table->foreign('empresa_funcionario_id')->references('id')->on('empresa_funcionarios');
-            $table->string('nome');
-            $table->integer('tempo');
-            $table->time('horario');
+            $table->unsignedBigInteger('func_intervalo_inicio_id');
+            $table->foreign('func_intervalo_inicio_id')->references('id')->on('func_intervalo_inicios');
             $table->timestamps();
         });
     }
@@ -31,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('funcionario_pausas');
+        Schema::dropIfExists('func_intervalo_fins');
     }
 };

@@ -32,9 +32,11 @@ const newApp = createApp(Empresa)
 .use(mdiVue,{
     icons: mdijs
 })
+
 const empresasPontos = createApp(Pontos).use(mdiVue,{
     icons: mdijs
 })
+
 empresasPontos.use(Oruga);
 empresasPontos.use(store);
 //newApp.use(Buefy)

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\WebControllers\Empresa;
 
 use App\Http\Controllers\Controller;
+use App\Models\EmpresaFuncionario;
 use App\Models\FuncionarioPontoInicio;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class FuncionarioBatePontoController extends Controller
 {
@@ -47,7 +49,15 @@ class FuncionarioBatePontoController extends Controller
      */
     public function show($id)
     {
-        return FuncionarioPontoInicio::with('funcionario_ponto_final', 'funcionario_ponto_pausa')->get();
+        $user = Auth::guard('empresa')->user();
+        $idEmpresa = $user->id;
+
+        try {
+            $empresaFuncionario = EmpresaFuncionario::where('empresa_user_id', $idEmpresa)->where('funcionario_user_id', $id)->first();
+            return FuncionarioPontoInicio::with('funcionario_ponto_final', 'funcionario_ponto_pausa')->where('empresa_funcionario_id', $empresaFuncionario->id)->get();
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
     }
 
     /**
