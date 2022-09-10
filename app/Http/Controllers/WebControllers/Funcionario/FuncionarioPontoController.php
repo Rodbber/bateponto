@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\EmpresaFuncionario;
 use App\Models\FuncIntervaloFim;
 use App\Models\FuncIntervaloInicio;
+use App\Models\FuncionarioFuncao;
+use App\Models\FuncionarioPausa;
 use App\Models\FuncionarioPontoFim;
 use App\Models\FuncionarioPontoInicio;
 use Illuminate\Http\Request;
@@ -47,18 +49,27 @@ class FuncionarioPontoController extends Controller
         }
     }
 
-    public function getStatusPonto(Request $request){
+    public function getStatusPonto(Request $request)
+    {
         $user = $request->user();
         $empresaFuncionario = EmpresaFuncionario::where('funcionario_user_id', $user->id)->first();
 
         try {
-            return FuncionarioPontoInicio::with('funcionario_ponto_final', 'func_intervalo_inicio.func_intervalo_fim')->latest()->where('empresa_funcionario_id', $empresaFuncionario->id)->first();
+            $funcoes = FuncionarioFuncao::where('empresa_funcionario_id', $empresaFuncionario->id)->get();
+            $intervalos = FuncionarioPausa::where('empresa_funcionario_id', $empresaFuncionario->id)->get();
+            $statusPontos = FuncionarioPontoInicio::with('funcionario_ponto_final', 'func_intervalo_inicio.func_intervalo_fim')->latest()->where('empresa_funcionario_id', $empresaFuncionario->id)->first();
+            return [
+                'funcoes' => $funcoes,
+                'intervalos' => $intervalos,
+                'ponto' => $statusPontos,
+            ];
         } catch (\Throwable $th) {
             throw $th;
         }
     }
 
-    public function pausaInicio(Request $request){
+    public function pausaInicio(Request $request)
+    {
         $user = $request->user();
         $empresaFuncionario = EmpresaFuncionario::where('funcionario_user_id', $user->id)->first();
 
@@ -68,14 +79,16 @@ class FuncionarioPontoController extends Controller
             $intervaloInicio = FuncIntervaloInicio::create([
                 'empresa_funcionario_id' => $empresaFuncionario->id,
                 'funcionario_ponto_inicio_id' => $request->funcionario_ponto_inicio_id,
-                'funcionario_pausa_id' => $request->funcionario_pausa_id]);
-            return response(['message' => 'Intervalo iniciado.'], 200);
+                'funcionario_pausa_id' => $request->funcionario_pausa_id
+            ]);
+            return response(['message' => 'Intervalo iniciado.', 'intervalo_id' => $intervaloInicio->id], 200);
         } catch (\Throwable $th) {
             throw $th;
         }
     }
 
-    public function pausaFim(Request $request){
+    public function pausaFim(Request $request)
+    {
         $user = $request->user();
         $empresaFuncionario = EmpresaFuncionario::where('funcionario_user_id', $user->id)->first();
 
@@ -89,6 +102,4 @@ class FuncionarioPontoController extends Controller
             throw $th;
         }
     }
-
-
 }

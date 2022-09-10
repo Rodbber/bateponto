@@ -22,6 +22,8 @@ class FuncionarioPontoInicio extends Model
         return $this->hasMany(FuncIntervaloInicio::class, 'funcionario_ponto_inicio_id');
     }
 
+
+
     /* public function func_intervalo_fim(){
         return $this->hasOne(FuncIntervaloFim::class, 'funcionario_ponto_inicio_id');
     } */
