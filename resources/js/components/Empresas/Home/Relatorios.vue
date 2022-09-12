@@ -31,7 +31,7 @@
         <small
           class="has-text-grey is-abbr-like"
           :title="props.row.created_at"
-          >{{ props.row.funcionario_ponto_pausa ? dataValue(props.row.funcionario_ponto_pausa.created_at) : '-' }}</small
+          >{{ props.row.funcionario_ponto_pausa ? ""+dataValue(props.row.funcionario_ponto_pausa.func_intervalo_fim.created_at)+" até "+dataValue(props.row.funcionario_ponto_pausa.created_at) : '-' }}</small
         >
       </o-table-column>
       <!-- <o-table-column v-slot="props">
@@ -83,6 +83,7 @@ export default {
         axios
           .get("/empresa/funcionario/batepontos/" + this.id)
           .then((r) => {
+              console.log(r.data);
             if (r.data) {
               this.data = r.data;
             }else {

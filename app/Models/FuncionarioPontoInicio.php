@@ -18,10 +18,15 @@ class FuncionarioPontoInicio extends Model
         return $this->hasOne(FuncionarioPontoFim::class, 'funcionario_ponto_inicio_id');
     }
 
+    public function funcionario_ponto_pausa(){
+        return $this->hasOne(FuncIntervaloInicio::class, 'funcionario_ponto_inicio_id')->with('func_intervalo_fim');
+    }
+
     public function func_intervalo_inicio(){
         return $this->hasMany(FuncIntervaloInicio::class, 'funcionario_ponto_inicio_id');
     }
 
+    
 
 
     /* public function func_intervalo_fim(){
