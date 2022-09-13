@@ -25,7 +25,7 @@ class FuncionarioPontoController extends Controller
 
         try {
             $pontoInicio = FuncionarioPontoInicio::create(['empresa_funcionario_id' => $empresaFuncionario->id]);
-            return response(['message' => 'Ponto iniciado.'], 200);
+            return response(['message' => 'Ponto iniciado.', 'ponto_id' => $pontoInicio->id], 200);
         } catch (\Throwable $th) {
             throw $th;
         }
@@ -132,15 +132,11 @@ class FuncionarioPontoController extends Controller
                     $inicio = $inicio->merge(collect($intervalos));
                 }
 
-
                 $fim = FuncionarioPontoFim::where('funcionario_ponto_inicio_id', $p->id)->first();
                 if ($fim) {
                     $fim['tipo'] = 'ponto fim';
                     $inicio = $inicio->merge(collect([$fim]));
                 }
-
-
-
 
                 //$inicio = $inicio->merge($intervalos->all());
 
