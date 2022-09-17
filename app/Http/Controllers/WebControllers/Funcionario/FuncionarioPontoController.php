@@ -3,28 +3,42 @@
 namespace App\Http\Controllers\WebControllers\Funcionario;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\WebControllers\Empresa\VerificarDentroPontosController;
 use App\Models\EmpresaFuncionario;
 use App\Models\FuncIntervaloFim;
 use App\Models\FuncIntervaloInicio;
 use App\Models\FuncionarioFuncao;
+use App\Models\FuncionarioIntervaloInicioPoligono;
 use App\Models\FuncionarioPausa;
 use App\Models\FuncionarioPontoFim;
+use App\Models\FuncionarioPontoFimPoligono;
 use App\Models\FuncionarioPontoInicio;
+use App\Models\FuncionarioPontoInicioPoligono;
 use Illuminate\Http\Request;
 
 class FuncionarioPontoController extends Controller
 {
     public function iniciar(Request $request)
     {
+        $dados = $request->all();
         $user = $request->user();
-        /* $empresa_id = $request->empresa_id;
-
-        $empresaFuncionario = EmpresaFuncionario::where('empresa_user_id', $empresa_id)->where('funcionario_user_id', $user->id)->first(); */
 
         $empresaFuncionario = EmpresaFuncionario::where('funcionario_user_id', $user->id)->first();
 
         try {
+            $empresa_funcionario_id = $empresaFuncionario->id;
+            $ponto = VerificarDentroPontosController::verificarSeEstaDentroDeAlgumPontoLocal($dados, $empresa_funcionario_id);
+            if(!$ponto){
+                return response(['message' => 'Nenhum ponto encontrado!', 'error' => 'Você não esta em nenhum ponto determinado em seu cadastro.'],400);
+            }
+            //$ponto_id = $ponto->id;
             $pontoInicio = FuncionarioPontoInicio::create(['empresa_funcionario_id' => $empresaFuncionario->id]);
+            $create_ponto = FuncionarioPontoInicioPoligono::create([
+                'inicio_id' => $pontoInicio->id,
+                'poligono_id' => $ponto->id,
+            ]);
+
+
             return response(['message' => 'Ponto iniciado.', 'ponto_id' => $pontoInicio->id], 200);
         } catch (\Throwable $th) {
             throw $th;
@@ -33,6 +47,7 @@ class FuncionarioPontoController extends Controller
 
     public function finalizar(Request $request)
     {
+        $dados = $request->all();
         $user = $request->user();
 
         /* $empresa_id = $request->empresa_id;
@@ -41,8 +56,19 @@ class FuncionarioPontoController extends Controller
         $empresaFuncionario = EmpresaFuncionario::where('funcionario_user_id', $user->id)->first();
 
         try {
+            $empresa_funcionario_id = $empresaFuncionario->id;
+            $ponto = VerificarDentroPontosController::verificarSeEstaDentroDeAlgumPontoLocal($dados, $empresa_funcionario_id);
+            if(!$ponto){
+                return response(['message' => 'Nenhum ponto encontrado!', 'error' => 'Você não esta em nenhum ponto determinado em seu cadastro.'], 400);
+            }
+
+            //$ponto_id = $ponto->id;
             $pontoInicio = FuncionarioPontoInicio::latest()->where('empresa_funcionario_id', $empresaFuncionario->id)->first();
             $pontoFim = FuncionarioPontoFim::create(['empresa_funcionario_id' => $empresaFuncionario->id, 'funcionario_ponto_inicio_id' => $pontoInicio->id]);
+            $create_ponto = FuncionarioPontoFimPoligono::create([
+                'fim_id' => $pontoFim->id,
+                'poligono_id' => $ponto->id,
+            ]);
             return response(['message' => 'Ponto finalizado.'], 200);
         } catch (\Throwable $th) {
             throw $th;
@@ -51,10 +77,12 @@ class FuncionarioPontoController extends Controller
 
     public function getStatusPonto(Request $request)
     {
+        //$dados = $request->all();
         $user = $request->user();
         $empresaFuncionario = EmpresaFuncionario::where('funcionario_user_id', $user->id)->first();
 
         try {
+            //$empresa_id = $empresaFuncionario->empresa_id;
             $funcoes = FuncionarioFuncao::where('empresa_funcionario_id', $empresaFuncionario->id)->get();
             $intervalos = FuncionarioPausa::where('empresa_funcionario_id', $empresaFuncionario->id)->get();
             $statusPontos = FuncionarioPontoInicio::with('funcionario_ponto_final', 'func_intervalo_inicio.func_intervalo_fim')->latest()->where('empresa_funcionario_id', $empresaFuncionario->id)->first();
@@ -70,16 +98,27 @@ class FuncionarioPontoController extends Controller
 
     public function pausaInicio(Request $request)
     {
+        $dados = $request->all();
         $user = $request->user();
         $empresaFuncionario = EmpresaFuncionario::where('funcionario_user_id', $user->id)->first();
 
         //return $request->all();
 
         try {
+            $empresa_funcionario_id = $empresaFuncionario->id;
+            $ponto = VerificarDentroPontosController::verificarSeEstaDentroDeAlgumPontoLocal($dados, $empresa_funcionario_id);
+            if(!$ponto){
+                return response(['message' => 'Nenhum ponto encontrado!', 'error' => 'Você não esta em nenhum ponto determinado em seu cadastro.'], 400);
+            }
+            //$ponto_id = $ponto->id;
             $intervaloInicio = FuncIntervaloInicio::create([
                 'empresa_funcionario_id' => $empresaFuncionario->id,
                 'funcionario_ponto_inicio_id' => $request->funcionario_ponto_inicio_id,
                 'funcionario_pausa_id' => $request->funcionario_pausa_id
+            ]);
+            $create_ponto = FuncionarioIntervaloInicioPoligono::create([
+                'inicio_id' => $intervaloInicio->id,
+                'poligono_id' => $ponto->id,
             ]);
             return response(['message' => 'Intervalo iniciado.', 'intervalo_id' => $intervaloInicio->id], 200);
         } catch (\Throwable $th) {
@@ -89,13 +128,24 @@ class FuncionarioPontoController extends Controller
 
     public function pausaFim(Request $request)
     {
+        $dados = $request->all();
         $user = $request->user();
         $empresaFuncionario = EmpresaFuncionario::where('funcionario_user_id', $user->id)->first();
 
         try {
+            $empresa_funcionario_id = $empresaFuncionario->id;
+            $ponto = VerificarDentroPontosController::verificarSeEstaDentroDeAlgumPontoLocal($dados, $empresa_funcionario_id);
+            if(!$ponto){
+                return response(['message' => 'Nenhum ponto encontrado!', 'error' => 'Você não esta em nenhum ponto determinado em seu cadastro.'], 400);
+            }
+            //$ponto_id = $ponto->id;
             $intervaloFim = FuncIntervaloFim::create([
                 'empresa_funcionario_id' => $empresaFuncionario->id,
                 'func_intervalo_inicio_id' => $request->func_intervalo_inicio_id
+            ]);
+            $create_ponto = FuncionarioIntervaloInicioPoligono::create([
+                'fim_id' => $intervaloFim->id,
+                'poligono_id' => $ponto->id,
             ]);
             return response(['message' => 'Intervalo finalizado.'], 200);
         } catch (\Throwable $th) {
@@ -160,19 +210,6 @@ class FuncionarioPontoController extends Controller
             $sorted = $newArray->sortByDesc(function ($item, $key) {
                 return $item['created_at'];
             })->values();
-
-            /* $intervalos26 = FuncIntervaloInicio::with('func_intervalo_fim')->where('funcionario_ponto_inicio_id', 26)->get();
-            $intervalosMap = $intervalos26->map(function ($i) {
-                $i['tipo'] = 'intervalo inicio';
-                $intervaloInicio = collect([$i]);
-                $intervaloFim = $i['func_intervalo_fim'];
-                if ($intervaloFim) {
-                    $intervaloFim['tipo'] = 'intervalo fim';
-                    $intervaloInicio = $intervaloInicio->merge(collect([$intervaloFim]));
-                }
-                //$i->forget('func_intervalo_fim');
-                return $intervaloInicio;
-            }); */
 
             return response(['historico' => $sorted], 200);
         } catch (\Throwable $th) {
