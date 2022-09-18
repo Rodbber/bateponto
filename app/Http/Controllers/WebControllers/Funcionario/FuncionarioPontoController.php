@@ -8,6 +8,7 @@ use App\Models\EmpresaFuncionario;
 use App\Models\FuncIntervaloFim;
 use App\Models\FuncIntervaloInicio;
 use App\Models\FuncionarioFuncao;
+use App\Models\FuncionarioIntervaloFimPoligono;
 use App\Models\FuncionarioIntervaloInicioPoligono;
 use App\Models\FuncionarioPausa;
 use App\Models\FuncionarioPontoFim;
@@ -143,7 +144,7 @@ class FuncionarioPontoController extends Controller
                 'empresa_funcionario_id' => $empresaFuncionario->id,
                 'func_intervalo_inicio_id' => $request->func_intervalo_inicio_id
             ]);
-            $create_ponto = FuncionarioIntervaloInicioPoligono::create([
+            $create_ponto = FuncionarioIntervaloFimPoligono::create([
                 'fim_id' => $intervaloFim->id,
                 'poligono_id' => $ponto->id,
             ]);

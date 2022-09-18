@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('fim_id');
             $table->unsignedBigInteger('poligono_id');
-            $table->foreign('fim_id')->references('id')->on('func_intervalo_inicios');
+            $table->foreign('fim_id')->references('id')->on('func_intervalo_fins');
             $table->foreign('poligono_id')->references('id')->on('bateponto_poligonos');
             $table->timestamps();
         });
