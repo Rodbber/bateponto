@@ -5,9 +5,11 @@ import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
     esbuild: {
-        jsxInject: `import * as L from 'leaflet'`,
-        jsxInject: `import * as GeoSearch from 'leaflet-geosearch'`,
-        jsxInject: `import Oruga from '@oruga-ui/oruga-next'`,
+        jsxInject:[
+            `import * as L from 'leaflet'`,
+            `import * as GeoSearch from 'leaflet-geosearch'`,
+            `import Oruga from '@oruga-ui/oruga-next'`,
+        ],
     },
     plugins: [
         vue(),
