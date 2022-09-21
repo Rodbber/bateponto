@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import HomeEmpresa from '/resources/js/components/Empresas/Home/Home.vue'
 import Relatorios from '/resources/js/components/Empresas/Home/Relatorios.vue'
-import FuncionarioNovo from '/resources/js/components/Empresas/funcionario/Cadastro.vue'
+import FuncionarioNovo from '/resources/js/components/Empresas/Funcionario/Cadastro.vue'
 
 let baseEmpresaHistory = '/empresa/home'
 
