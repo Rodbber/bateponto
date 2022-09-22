@@ -311,11 +311,10 @@
 <script>
 import "leaflet/dist/leaflet.css";
 import * as L from "leaflet";
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "node_modules/leaflet/dist/images/marker-icon-2x.png",
-  iconUrl: "node_modules/leaflet/dist/images/marker-icon.png",
-  shadowUrl: "node_modules/leaflet/dist/images/marker-shadow.png"
+L.Icon.Default({
+  iconRetinaUrl: "public/img/marker-icon-2x.png",
+  iconUrl: "public/img/marker-icon.png",
+  shadowUrl: "public/img/marker-shadow.png"
 });
 import "leaflet-geosearch/dist/geosearch.css";
 import "leaflet-path-transform";
