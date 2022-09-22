@@ -311,7 +311,8 @@
 <script>
 import "leaflet/dist/leaflet.css";
 import * as L from "leaflet";
-L.Icon.Default({
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
   iconRetinaUrl: "public/img/marker-icon-2x.png",
   iconUrl: "public/img/marker-icon.png",
   shadowUrl: "public/img/marker-shadow.png"
