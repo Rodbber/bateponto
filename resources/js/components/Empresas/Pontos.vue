@@ -313,9 +313,9 @@ import "leaflet/dist/leaflet.css";
 import * as L from "leaflet";
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "public/img/marker-icon-2x.png",
-  iconUrl: "public/img/marker-icon.png",
-  shadowUrl: "public/img/marker-shadow.png"
+  iconRetinaUrl: "../img/leaflet/marker-icon-2x.png",
+  iconUrl: "../img/leaflet/marker-icon.png",
+  shadowUrl: "../img/leaflet/marker-shadow.png"
 });
 import "leaflet-geosearch/dist/geosearch.css";
 import "leaflet-path-transform";
