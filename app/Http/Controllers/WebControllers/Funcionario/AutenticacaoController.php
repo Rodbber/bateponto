@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Webcontrollers\Funcionario;
+namespace App\Http\Controllers\WebControllers\Funcionario;
 
 use App\Http\Controllers\Controller;
 use App\Models\FuncionarioUser;
