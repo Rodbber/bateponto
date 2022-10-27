@@ -43,7 +43,7 @@ class FuncionarioPontoController extends Controller
 
             return response(['message' => 'Ponto iniciado.', 'ponto_id' => $pontoInicio->id], 200);
         } catch (\Throwable $th) {
-            throw $th;
+            return response(['error' => $th->getMessage()], 400);
         }
     }
 

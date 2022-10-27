@@ -19,4 +19,18 @@ class EmpresaFuncionario extends Model
     public function funcionario(){
         return $this->belongsTo(FuncionarioUser::class, 'funcionario_user_id');
     }
+
+    public function funcionario_funcao(){
+        return $this->hasOne(FuncionarioFuncao::class);
+    }
+
+    public function funcionario_pausas(){
+        return $this->hasMany(FuncionarioPausa::class);
+    }
+
+    public function funcionario_pontos(){
+        return $this->hasMany(FuncionarioPontosPoligono::class);
+    }
+
+
 }

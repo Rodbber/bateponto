@@ -110,6 +110,8 @@ class VerificarDentroPontosController extends Controller
         $pontosPoligono = FuncionarioPontosPoligono::with('empresa_funcionario', 'poligono')->where('empresa_funcionario_id', $empresa_funcionario_id)->get();
         foreach ($pontosPoligono as $key => $value) {
             $latlngs = json_decode($value['poligono']['pontos'], true);
+            /* $value['poligono']['tipo'] = 'poligono';
+            return $value['poligono']; */
             $ver = VerificarDentroPontosController::dentroDaAreaPoligono($latlngs, $dadosValidados['lat'], $dadosValidados['lng']);
             if ($ver) {
                 $value['poligono']['tipo'] = 'poligono';

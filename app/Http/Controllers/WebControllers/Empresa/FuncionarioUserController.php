@@ -148,7 +148,15 @@ class FuncionarioUserController extends Controller
      */
     public function show($id)
     {
-        //
+        $user = Auth::guard('empresa')->user();
+        $idEmpresa = $user->id;
+        try {
+            $empresaFuncionario = EmpresaFuncionario::with('funcionario_funcao', 'funcionario', 'funcionario_pausas', 'funcionario_pontos')->where('funcionario_user_id', $id)->where('empresa_user_id', $idEmpresa)->first();
+            return $empresaFuncionario;
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+        //return FuncionarioUser::with()->get();
     }
 
     /**
@@ -171,7 +179,74 @@ class FuncionarioUserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $dadosValidadosUser = Validator::make($request->all(), [
+            'name' => 'required|string',
+            'email' => 'required|email',
+        ])->validated();
+
+        $dadosValidadosFuncao = Validator::make($request->all(), [
+            'funcao' => 'required|string',
+            'inicio' => 'required|date_format:H:i',
+            'fim' => 'required|date_format:H:i|after:inicio',
+            'tolerancia' => 'required|numeric',
+        ])->validated();
+
+        $dadosValidadosPausas = Validator::make($request->all(), [
+            'pausas' => 'array',
+            'pausas.*.nome' => 'string',
+            'pausas.*.horario' => 'date_format:H:i',
+            'pausas.*.tempo' => 'numeric',
+        ])->validated();
+
+        $dadosValidadosPontos = Validator::make($request->all(), [
+            'pontos' => 'required|array',
+            'pontos.*.id' => 'required|numeric',
+            'pontos.*.tipo' => 'required|string',
+        ])->validated();
+
+        //return $dadosValidadosPausas;
+
+        //$password = Str::random(6);
+
+        //$dadosValidadosUser['password'] = Hash::make($password);
+        $user = Auth::guard('empresa')->user();
+        $id = $user->id;
+        DB::beginTransaction();
+        try {
+            $funcionario = FuncionarioUser::find($id)->update($dadosValidadosUser);
+            try {
+                $empresaFuncionario = array('empresa_user_id' => $id, 'funcionario_user_id' => $funcionario->id);
+                $empresaFuncionario = EmpresaFuncionario::where($empresaFuncionario)->first();
+                $dadosValidadosFuncao['empresa_funcionario_id'] = $empresaFuncionario->id;
+                FuncionarioFuncao::create($dadosValidadosFuncao);
+                foreach ($dadosValidadosPontos['pontos'] as $key => $value) {
+                    //$value['empresa_funcionario_id'] = $empresaFuncionario->id;
+                    if ($value['tipo'] == 'QUADRILATERO') {
+                        FuncionarioPontosQuadrilatero::where('empresa_funcionario_id', $empresaFuncionario->id)->update([
+                            'quadrilatero_id' => $value['id'],
+                        ]);
+                    } else {
+                        FuncionarioPontosPoligono::where('empresa_funcionario_id', $empresaFuncionario->id)->update([
+                            'poligono_id' => $value['id'],
+                        ]);
+                    }
+                }
+                if ($dadosValidadosPausas) {
+                    foreach ($dadosValidadosPausas['pausas'] as $key => $value) {
+                        $value['empresa_funcionario_id'] = $empresaFuncionario->id;
+                        FuncionarioPausa::create($value);
+                    }
+                }
+            } catch (\Throwable $th) {
+                DB::rollBack();
+                throw $th;
+            }
+
+            DB::commit();
+            return response(['success' => 'Dados alterados com sucesso!'], 200);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     /**

@@ -123,7 +123,7 @@
                 <div v-for="(ponto, key) in form.pontos" :key="key">
                   <o-field label="Selecione um ponto" class="w-full">
                     <o-select
-                      placeholder="Selecione um ponto para este funcionario"
+                    placeholder="Selecione um ponto"
                       class="w-full"
                       expanded
                       v-model="form.pontos[key]"
@@ -162,8 +162,11 @@
         </div>
 
         <div class="flex justify-end">
-          <o-button native-type="submit">Cadastrar</o-button>
+          <o-button native-type="submit">{{btnEnviar}}</o-button>
         </div>
+        <!-- <div v-else class="flex justify-end">
+          <o-button native-type="update">Editar</o-button>
+        </div> -->
       </form>
     </div>
   </section>
@@ -173,9 +176,14 @@
 <script>
 export default {
   name: "FuncionarioNovo",
+  props: {
+    id: {
+      default: null,
+    },
+  },
   data: () => {
     return {
-      id: null,
+      //id: null,
       form: {
         pausas: [],
         pontos: [],
@@ -184,6 +192,16 @@ export default {
       pontos: [],
     };
   },
+  watch: {
+    id(n) {
+      if (n) {
+        this.getData();
+      }
+    },
+  },
+  created() {
+    this.getData();
+  },
   computed: {
     verificacaoDePontosMaiorQueExistentes() {
       return this.form.pontos.length < this.pontos.length;
@@ -191,8 +209,48 @@ export default {
     verificacaoDePontosPeloMenos1() {
       return this.form.pontos.length > 1;
     },
+    btnEnviar(){
+        return this.id ? 'Editar' : 'Enviar'
+    }
   },
   methods: {
+    getData() {
+        //console.log('getdata')
+      if (this.id) {
+        axios({
+          method:"GET",
+          url: "/empresa/funcionario/" + this.id,
+        })
+          .then((r) => {
+            if (r.data) {
+              //console.log(r.data);
+              this.form.name = r.data.funcionario.name
+              this.form.email = r.data.funcionario.email
+              this.form.funcao = r.data.funcionario_funcao.funcao
+              this.form.inicio = r.data.funcionario_funcao.inicio
+              this.form.fim = r.data.funcionario_funcao.fim
+
+              if(r.data.funcionario_funcao.hasOwnProperty('tolerancia')){
+                this.form.tolerancia = r.data.funcionario_funcao.tolerancia
+              }
+
+              this.form.pausas = []
+              for(let i of r.data.funcionario_pausas){
+                this.form.pausas.push({ nome: i.nome, horario: i.horario, tempo: i.tempo });
+              }
+
+              this.form.pontos = []
+              for(let i of r.data.funcionario_pontos){
+                this.form.pontos.push({id: i.id, tipo: 'POLIGONO'});
+              }
+
+
+
+            }
+          })
+          .catch((e) => console.log(e.message));
+      }
+    },
     getPontosEmpresa() {
       let method = "GET";
       let url = "/empresa/pontos/quadrilatero/get/ativos";

@@ -185,12 +185,14 @@
                   value="1"
                   @change="changeRadioValue"
                 />
+
                 <label
                   class="form-check-label inline-block text-gray-800"
                   for="quadrilatero"
                 >
                   Quadrilatero
                 </label>
+                <div><span class="font-bold pl-10 text-sm text-gray-500">Recomendado para pontos muito proximos</span></div>
               </div>
               <!-- <div class="form-check">
                                 <input
