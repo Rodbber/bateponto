@@ -14,7 +14,13 @@ const routes = [
     }, */
     { path: baseEmpresaHistory, name: 'home.empresa', component: HomeEmpresa },
     { path: baseEmpresaHistory + '/relatorios-funcionario/:id', name: 'relatorios', component: Relatorios, props: true },
-    { path: baseEmpresaHistory + '/funcionario/cadastro', name: 'empresa.funcionario.cadastro', component: FuncionarioNovo }
+    { path: baseEmpresaHistory + '/funcionario/cadastro', name: 'empresa.funcionario.cadastro', component: FuncionarioNovo },
+    {
+        path: baseEmpresaHistory + '/funcionario/editar/:id',
+        name: 'empresa.funcionario.editar',
+        component: FuncionarioNovo,
+        props: true
+    }
 ]
 
 //let baseHistory = '/empresa/'

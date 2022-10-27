@@ -52,6 +52,7 @@
             >
               Relatorios
             </a> -->
+            <router-link :to="{ name: 'empresa.funcionario.editar', params: { id: props.row.id } }" class="button is-small mr-4">Editar</router-link>
             <router-link :to="{ name: 'relatorios', params: { id: props.row.id } }" class="button is-small mr-4">Relatorios</router-link>
             <button
               title="Apenas para testes"
