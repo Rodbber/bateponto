@@ -689,7 +689,7 @@ export default {
     map.on("click", function (e) {
       if (!testaponto()) {
         if (!desenhos.getLayers().length) {
-          const marker = L.marker(e.latlng);
+          const marker = L.marker(e.latlng, {draggable:true});
           limite();
           marker.addTo(markers);
         }
